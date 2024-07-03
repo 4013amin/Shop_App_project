@@ -1,7 +1,5 @@
 package com.example.shop_app_project.data.api
 
-import com.example.shop_app_project.data.models.product.ProductModel
-import com.example.shop_app_project.data.models.register.User
 import com.example.shop_app_project.data.models.register.login_model
 import retrofit2.Response
 import retrofit2.http.Body

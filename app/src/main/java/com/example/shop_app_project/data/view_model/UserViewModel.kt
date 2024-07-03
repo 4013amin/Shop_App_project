@@ -3,8 +3,6 @@ package com.example.shop_app_project.data.view_model
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shop_app_project.data.models.product.ProductModel
-import com.example.shop_app_project.data.models.product.ProductModelItem
 import com.example.shop_app_project.data.models.register.login_model
 import com.example.shop_app_project.data.utils.Utils_ret
 import kotlinx.coroutines.Dispatchers

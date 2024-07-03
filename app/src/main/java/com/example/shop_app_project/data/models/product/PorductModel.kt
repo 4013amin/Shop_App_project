@@ -1,0 +1,13 @@
+package com.example.shop_app_project.data.models.product
+
+data class PorductModel(
+    val category: Category,
+    val created_at: String,
+    val description: String,
+    val image: String,
+    val name: String,
+    val pk: Int,
+    val price: Double,
+    val stock: Int,
+    val updated_at: String
+)
