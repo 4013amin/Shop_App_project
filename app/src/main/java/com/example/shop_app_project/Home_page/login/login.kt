@@ -1,4 +1,4 @@
-package com.example.shop_app_project.login
+package com.example.shop_app_project.Home_page.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,15 +14,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.shop_app_project.view_model.UserViewModel
+import com.example.shop_app_project.data.view_model.UserViewModel
 
 @Composable
-fun ScreenRegister(navController: NavHostController, userViewModel: UserViewModel = viewModel()) {
+fun ScreenLogin(navController: NavHostController, userViewModel: UserViewModel = viewModel()) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var show_login_Message by remember { mutableStateOf("") }
 
-    // State to hold the registration message
-    var registrationMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -32,7 +31,7 @@ fun ScreenRegister(navController: NavHostController, userViewModel: UserViewMode
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Register", fontSize = 60.sp)
+        Text(text = "Login", fontSize = 60.sp)
 
         TextField(
             value = username,
@@ -47,24 +46,22 @@ fun ScreenRegister(navController: NavHostController, userViewModel: UserViewMode
             visualTransformation = PasswordVisualTransformation()
         )
 
-
         Button(onClick = {
-            userViewModel.sendRegister(username, password)
-            navController.navigate("Screen_login")
+            // Handle login logic here
+            userViewModel.sendLogin(username, password)
+            navController.navigate("Screen_register")
         }) {
-            Text(text = "Submit")
+            Text(text = "Login")
         }
 
-        // Display registration result message
-        LaunchedEffect(userViewModel.registrationResult.value) {
-            if (userViewModel.registrationResult.value.isNotBlank()) {
-                registrationMessage = userViewModel.registrationResult.value
+        //massage_login_for_ok
+        LaunchedEffect(userViewModel.login_result.value) {
+            if (userViewModel.login_result.value.isNotBlank()) {
+                show_login_Message = userViewModel.login_result.value
             }
         }
 
-        // Display registration message
-        if (registrationMessage.isNotBlank()) {
-            Text(text = registrationMessage)
-        }
+        Text(text = show_login_Message)
+
     }
 }

@@ -1,4 +1,4 @@
-package com.example.shop_app_project.view_model
+package com.example.shop_app_project.data.view_model
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

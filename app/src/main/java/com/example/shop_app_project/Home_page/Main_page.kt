@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
-import com.example.shop_app_project.view_model.UserViewModel
+import com.example.shop_app_project.data.view_model.UserViewModel
 
 class Main_page : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

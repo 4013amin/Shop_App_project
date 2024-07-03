@@ -1,4 +1,4 @@
-package com.example.shop_app_project.login
+package com.example.shop_app_project.Home_page.login
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
