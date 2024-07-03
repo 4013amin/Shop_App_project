@@ -12,12 +12,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.shop_app_project.view_model.UserViewModel
 
 @Composable
-fun ScreenLogin(navController: NavHostController) {
+fun ScreenLogin(navController: NavHostController, userViewModel: UserViewModel = viewModel()) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var show_login_Message by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -44,9 +48,20 @@ fun ScreenLogin(navController: NavHostController) {
 
         Button(onClick = {
             // Handle login logic here
+            userViewModel.sendLogin(username, password)
             navController.navigate("Screen_register")
         }) {
             Text(text = "Login")
         }
+
+        //massage_login_for_ok
+        LaunchedEffect(userViewModel.login_result.value) {
+            if (userViewModel.login_result.value.isNotBlank()) {
+                show_login_Message = userViewModel.login_result.value
+            }
+        }
+
+        Text(text = show_login_Message)
+
     }
 }
