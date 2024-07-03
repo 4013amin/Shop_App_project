@@ -1,5 +1,6 @@
 package com.example.shop_app_project.data.api
 
+import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.models.register.login_model
 import retrofit2.Response
 import retrofit2.http.Body
@@ -17,8 +18,8 @@ interface login {
     suspend fun loginUser(@Body user: login_model): Response<login_model>
 
 
-    @GET("/posts")
-    suspend fun get_products(): Response<ProductModel>
+    @GET("/api/products/")
+    suspend fun get_products(): Response<PorductModel>
 
 
 }
