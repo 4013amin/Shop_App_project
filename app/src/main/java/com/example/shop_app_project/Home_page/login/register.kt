@@ -57,9 +57,9 @@ fun ScreenRegister(
         )
 
         Button(onClick = {
+            userViewModel.sendRegister(username = username, address = password)
             userViewModel.saveCredentials(username, password)
             navController.navigate("Screen_login")
-//            userViewModel.sendRegister(username, password)
         }) {
             Text(text = "Submit")
         }

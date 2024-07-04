@@ -22,19 +22,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences =
         application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
-    fun sendRegister(username: String, password: String) {
+    fun sendRegister(username: String, address: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = try {
-                val user = login_model(
-                    username = username,
-                    password = password,
-                    address = "address",
-                    city = "city",
-                    country = "country",
-                    phone = "phone",
-                    postal_code = "postal_code"
-                )
-                Utils_ret.api.registerUser(user)
+                Utils_ret.api.registerUser(username, address)
             } catch (e: IOException) {
                 Log.e("UserViewModel", "Network error occurred during registration.", e)
                 registrationResult.value = "Network error occurred."
@@ -52,7 +43,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 //shared
                 var editor = sharedPreferences.edit()
                 editor.putString("username", username)
-                editor.putString("password", password)
+                editor.putString("password", address)
                 editor.apply()
 
             } else {
@@ -61,17 +52,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun sendLogin(username: String, password: String) {
+    fun sendLogin(username: String, address: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = try {
                 val user = login_model(
                     username = username,
-                    password = password,
-                    address = "",
-                    city = "",
-                    country = "",
-                    phone = "",
-                    postal_code = ""
+                    address = address,
                 )
                 Utils_ret.api.loginUser(user)
             } catch (e: IOException) {
