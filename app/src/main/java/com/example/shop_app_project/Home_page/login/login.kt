@@ -18,10 +18,12 @@ import com.example.shop_app_project.data.view_model.UserViewModel
 
 @Composable
 fun ScreenLogin(navController: NavHostController, userViewModel: UserViewModel = viewModel()) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var show_login_Message by remember { mutableStateOf("") }
 
+    val savedCredentials = userViewModel.getSavedCredentials()
+
+    var username by remember { mutableStateOf(savedCredentials.first) }
+    var password by remember { mutableStateOf(savedCredentials.second) }
+    var show_login_Message by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -48,7 +50,7 @@ fun ScreenLogin(navController: NavHostController, userViewModel: UserViewModel =
 
         Button(onClick = {
             // Handle login logic here
-            userViewModel.sendLogin(username, password)
+//            userViewModel.sendLogin(username, password)
             navController.navigate("Screen_register")
         }) {
             Text(text = "Login")

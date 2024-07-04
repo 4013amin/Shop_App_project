@@ -1,9 +1,11 @@
 package com.example.shop_app_project.data.view_model
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.AndroidViewModel
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.models.register.login_model
 import com.example.shop_app_project.data.utils.Utils_ret
@@ -12,10 +14,13 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class UserViewModel : ViewModel() {
+class UserViewModel(application: Application) : AndroidViewModel(application) {
     var registrationResult = mutableStateOf("")
     var login_result = mutableStateOf("")
     var products = mutableStateOf<List<PorductModel>>(arrayListOf())
+
+    private val sharedPreferences =
+        application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
     fun sendRegister(username: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -43,6 +48,13 @@ class UserViewModel : ViewModel() {
             if (response.isSuccessful && response.body() != null) {
                 Log.d("UserViewModel", "Registration successful.")
                 registrationResult.value = "Registration successful."
+
+                //shared
+                var editor = sharedPreferences.edit()
+                editor.putString("username", username)
+                editor.putString("password", password)
+                editor.apply()
+
             } else {
                 Log.e("UserViewModel", "Registration failed: ${response.errorBody()}")
             }
@@ -75,6 +87,7 @@ class UserViewModel : ViewModel() {
             if (response.isSuccessful && response.body() != null) {
                 Log.d("UserViewModel", "Login successful.")
                 registrationResult.value = "Login successful."
+
             } else {
                 Log.e("UserViewModel", "Login failed: ${response.errorBody()}")
             }
@@ -102,9 +115,25 @@ class UserViewModel : ViewModel() {
             if (response.isSuccessful && response.body() != null) {
                 Log.d("UserViewModel", "Products fetched successfully.")
                 products.value = response.body()!!
+
             } else {
                 Log.e("UserViewModel", "Failed to fetch products: ${response.errorBody()}")
             }
         }
     }
+
+    fun saveCredentials(username: String, password: String) {
+        with(sharedPreferences.edit()) {
+            putString("username", username)
+            putString("password", password)
+            apply()
+        }
+    }
+
+    fun getSavedCredentials(): Pair<String, String> {
+        val username = sharedPreferences.getString("username", "") ?: ""
+        val password = sharedPreferences.getString("password", "") ?: ""
+        return Pair(username, password)
+    }
 }
+

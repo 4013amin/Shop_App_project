@@ -1,5 +1,6 @@
 package com.example.shop_app_project.Home_page.login
 
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -15,13 +16,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.shop_app_project.data.view_model.UserViewModel
+import com.example.shop_app_project.data.view_model.UserViewModelFactory
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun ScreenRegister(navController: NavHostController, userViewModel: UserViewModel = viewModel()) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun ScreenRegister(
+    navController: NavHostController,
+    userViewModel: UserViewModel = viewModel(
+        factory = UserViewModelFactory(LocalContext.current.applicationContext as Application)
+    )
+) {
+    val savedCredentials = userViewModel.getSavedCredentials()
 
-    // State to hold the registration message
+    var username by remember { mutableStateOf(savedCredentials.first) }
+    var password by remember { mutableStateOf(savedCredentials.second) }
+
     var registrationMessage by remember { mutableStateOf("") }
 
     Column(
@@ -47,22 +56,20 @@ fun ScreenRegister(navController: NavHostController, userViewModel: UserViewMode
             visualTransformation = PasswordVisualTransformation()
         )
 
-
         Button(onClick = {
-            userViewModel.sendRegister(username, password)
+            userViewModel.saveCredentials(username, password)
             navController.navigate("Screen_login")
+//            userViewModel.sendRegister(username, password)
         }) {
             Text(text = "Submit")
         }
 
-        // Display registration result message
         LaunchedEffect(userViewModel.registrationResult.value) {
             if (userViewModel.registrationResult.value.isNotBlank()) {
                 registrationMessage = userViewModel.registrationResult.value
             }
         }
 
-        // Display registration message
         if (registrationMessage.isNotBlank()) {
             Text(text = registrationMessage)
         }
