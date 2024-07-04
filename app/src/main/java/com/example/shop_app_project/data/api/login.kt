@@ -19,7 +19,7 @@ interface login {
 
 
     @GET("/api/products/")
-    suspend fun get_products(): Response<PorductModel>
+    suspend fun getProducts(): Response<List<PorductModel>>
 
 
 }

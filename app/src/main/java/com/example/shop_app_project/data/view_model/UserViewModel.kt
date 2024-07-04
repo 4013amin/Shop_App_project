@@ -97,7 +97,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun getAllProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             val response = try {
-                Utils_ret.api.get_products()
+                Utils_ret.api.getProducts()
             } catch (e: IOException) {
                 Log.e("UserViewModel", "Network error occurred while fetching products.", e)
                 registrationResult.value = "Network error occurred."
@@ -113,14 +113,17 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             if (response.isSuccessful && response.body() != null) {
-                Log.d("UserViewModel", "Products fetched successfully.")
+                Log.d("UserViewModel", "Products fetched successfully: ${response.body()}")
                 products.value = response.body()!!
-
             } else {
-                Log.e("UserViewModel", "Failed to fetch products: ${response.errorBody()}")
+                Log.e(
+                    "UserViewModel",
+                    "Failed to fetch products: ${response.errorBody()?.string()}"
+                )
             }
         }
     }
+
 
     fun saveCredentials(username: String, password: String) {
         with(sharedPreferences.edit()) {

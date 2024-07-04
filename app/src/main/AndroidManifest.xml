@@ -17,7 +17,7 @@
         android:theme="@style/Theme.Shop_App_project"
         tools:targetApi="31">
         <activity
-            android:name=".Home_page.login.MainActivity"
+            android:name=".Home_page.Main_page"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Shop_App_project">
