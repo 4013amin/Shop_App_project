@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Shop_App_projectTheme {
-                nav()
+                ScreenRegiste()
             }
         }
     }
@@ -38,3 +38,10 @@ fun nav() {
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun ScreenRegiste() {
+    nav()
+}
+
