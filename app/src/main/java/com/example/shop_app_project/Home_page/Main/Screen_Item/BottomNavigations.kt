@@ -21,7 +21,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.shop_app_project.Home_page.Main.UiHomePage
+import com.example.shop_app_project.data.view_model.UserViewModel
 
 data class NavigationsItem(
     val route: String,
@@ -38,7 +40,7 @@ val navItems = listOf(
 
 @ExperimentalFoundationApi
 @Composable
-fun BottomNavigations(navController: NavController) {
+fun BottomNavigations(navController: NavController, userViewModel: UserViewModel) {
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -75,4 +77,3 @@ fun BottomNavigations(navController: NavController) {
         }
     }
 }
-

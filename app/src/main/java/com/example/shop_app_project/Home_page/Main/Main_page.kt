@@ -34,16 +34,23 @@ class MainPage : ComponentActivity() {
         setContent {
             Shop_App_projectTheme {
                 val navController = rememberNavController()
+
+                // نمایش UI اصلی صفحه
                 Column(modifier = Modifier.fillMaxSize()) {
                     UiHomePage()
-                    BottomNavigations(navController)
                 }
+
+                var userViewModel : UserViewModel = viewModel()
+
+                // نمایش ناوبری پایین صفحه
+                BottomNavigations(navController , userViewModel)
             }
         }
     }
 }
 
-@ExperimentalFoundationApi
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UiHomePage(userViewModel: UserViewModel = viewModel()) {
     userViewModel.getAllProducts()
@@ -103,4 +110,10 @@ fun ProductItem(name: String, description: String, price: Int, image: String) {
     }
 }
 
-
+@Preview(showBackground = true)
+@Composable
+fun show_data() {
+    Shop_App_projectTheme {
+        UiHomePage()
+    }
+}

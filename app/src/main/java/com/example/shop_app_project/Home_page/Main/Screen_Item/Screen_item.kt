@@ -11,6 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.shop_app_project.data.models.product.PorductModel
+import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 
 @Composable
 fun SearchPage() {
@@ -26,7 +29,9 @@ fun SearchPage() {
 }
 
 @Composable
-fun CartPage() {
+fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
+    val cartItems = cartViewModel.cartItems.value
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,6 +40,24 @@ fun CartPage() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Cart Page", fontSize = 32.sp)
+
+        // نمایش لیست محصولات در سبد خرید
+        for (item in cartItems) {
+            CartItem(product = item)
+        }
+    }
+}
+
+@Composable
+fun CartItem(product: PorductModel) {
+    Column(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+    ) {
+        Text(text = product.name, fontSize = 20.sp)
+        Text(text = product.description, fontSize = 14.sp, color = Color.Gray)
+        Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
+        // به اینجا می‌توانید تصویر محصول را نیز اضافه کنید اگر دارید
     }
 }
 

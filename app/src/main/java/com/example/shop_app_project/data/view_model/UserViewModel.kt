@@ -4,8 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.models.register.login_model
 import com.example.shop_app_project.data.utils.Utils_ret
@@ -18,6 +18,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var registrationResult = mutableStateOf("")
     var login_result = mutableStateOf("")
     var products = mutableStateOf<List<PorductModel>>(arrayListOf())
+
+    private val shoppingCartViewModel = ShoppingCartViewModel()
 
     private val sharedPreferences =
         application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
@@ -124,5 +126,24 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         val password = sharedPreferences.getString("password", "") ?: ""
         return Pair(username, password)
     }
-}
 
+    // تابع برای اضافه کردن به سبد خرید
+    fun addToCart(product: PorductModel) {
+        shoppingCartViewModel.addToCart(product)
+    }
+
+    // تابع برای حذف از سبد خرید
+    fun removeFromCart(product: PorductModel) {
+        shoppingCartViewModel.removeFromCart(product)
+    }
+
+    // تابع برای دریافت لیست محصولات در سبد خرید
+    fun getCartItems(): List<PorductModel> {
+        return shoppingCartViewModel.getCartItems()
+    }
+
+    // تابع برای پاک کردن سبد خرید
+    fun clearCart() {
+        shoppingCartViewModel.clearCart()
+    }
+}
