@@ -17,11 +17,9 @@ interface login {
         @Field("address") address: String
     ): Response<login_model>
 
-
     @FormUrlEncoded
     @POST("login_user")
     suspend fun loginUser(@Body user: login_model): Response<login_model>
-
 
     @GET("/api/products/")
     suspend fun getProducts(): Response<List<PorductModel>>

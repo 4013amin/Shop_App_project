@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.data.view_model.UserViewModelFactory
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ScreenRegister(
