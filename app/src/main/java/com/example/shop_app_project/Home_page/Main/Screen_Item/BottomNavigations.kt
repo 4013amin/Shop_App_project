@@ -1,5 +1,6 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -20,7 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.shop_app_project.Home_page.Main.Ui_Home_page
+import com.example.shop_app_project.Home_page.Main.UiHomePage
 
 data class NavigationsItem(
     val route: String,
@@ -35,6 +36,7 @@ val navItems = listOf(
     NavigationsItem("profile", "Profile", Icons.Default.Person)
 )
 
+@ExperimentalFoundationApi
 @Composable
 fun BottomNavigations(navController: NavController) {
     Scaffold(
@@ -66,7 +68,7 @@ fun BottomNavigations(navController: NavController) {
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("home") { Ui_Home_page() }
+            composable("home") { UiHomePage() }
             composable("search") { SearchPage() }
             composable("cart") { CartPage() }
             composable("profile") { ProfilePage() }
