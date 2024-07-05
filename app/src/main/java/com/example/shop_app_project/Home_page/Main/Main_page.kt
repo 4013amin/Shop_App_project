@@ -1,4 +1,4 @@
-package com.example.shop_app_project.Home_page
+package com.example.shop_app_project.Home_page.Main
 
 import android.os.Bundle
 import android.util.Log
@@ -20,7 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.example.shop_app_project.Home_page.Main.Screen_Item.BottomNavigations
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 
@@ -30,6 +32,8 @@ class Main_page : ComponentActivity() {
         setContent {
             Shop_App_projectTheme {
                 Ui_Home_page()
+                val navController = rememberNavController()
+                BottomNavigations(navController)
             }
         }
     }
