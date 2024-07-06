@@ -7,30 +7,38 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.shop_app_project.Home_page.Main.Screen_Item.BottomNavigations
+import com.example.shop_app_project.Home_page.login.ScreenRegister
+import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 
-@ExperimentalFoundationApi
-class MainPage : ComponentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -39,22 +47,34 @@ class MainPage : ComponentActivity() {
                 val userViewModel: UserViewModel = viewModel()
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
-                Column(modifier = Modifier.fillMaxSize()) {
-                    UiHomePage(userViewModel = userViewModel, shoppingCartViewModel)
-                }
 
-                BottomNavigations(navController, userViewModel , shoppingCartViewModel)
+                BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }
     }
 }
 
+data class CategoryModel(
+    val name: String,
+    val products: List<PorductModel>
+)
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun UiHomePage(userViewModel: UserViewModel = viewModel(), cartViewModel: ShoppingCartViewModel) {
+fun UiHomePage(
+    userViewModel: UserViewModel = viewModel(),
+    cartViewModel: ShoppingCartViewModel,
+    navController: NavController
+) {
     userViewModel.getAllProducts()
     val products by userViewModel.products
-    val pagerState = rememberPagerState(pageCount = { products.size })
+
+    // Sample categories, you can get them from your viewmodel
+    val categories = listOf(
+        CategoryModel("Category 1", products.take(10)),
+        CategoryModel("Category 2", products.drop(10).take(10)),
+        CategoryModel("Category 3", products.drop(20))
+    )
 
     Column(
         modifier = Modifier
@@ -68,9 +88,22 @@ fun UiHomePage(userViewModel: UserViewModel = viewModel(), cartViewModel: Shoppi
         if (products.isEmpty()) {
             Log.d("UiHomePage", "No products available.")
         } else {
+            // HorizontalPager for top products
+            val pagerState = rememberPagerState(pageCount = { 10.coerceAtMost(products.size) })
+
+            LaunchedEffect(Unit) {
+                while (true) {
+                    pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount)
+                    kotlinx.coroutines.delay(3000) // Delay for 3 seconds between each scroll
+                }
+            }
+
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .height(300.dp)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 100.dp) // Add horizontal padding
             ) { page ->
                 val product = products[page]
                 ProductItem(
@@ -80,8 +113,38 @@ fun UiHomePage(userViewModel: UserViewModel = viewModel(), cartViewModel: Shoppi
                     image = product.image,
                     addToCart = {
                         cartViewModel.addToCart(product)
-                    }
+                    },
+                    onClick = {}
                 )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // LazyColumn for categorized products
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(categories) { category ->
+                    Text(
+                        text = category.name,
+                        fontSize = 24.sp,
+                        color = Color.Black,
+                        modifier = Modifier.padding(8.dp)
+                    )
+
+                    LazyRow {
+                        items(category.products) { product ->
+                            ProductItem(
+                                name = product.name,
+                                description = product.description,
+                                price = product.price,
+                                image = product.image,
+                                addToCart = {
+                                    cartViewModel.addToCart(product)
+                                },
+                                onClick = {}
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -93,31 +156,33 @@ fun ProductItem(
     description: String,
     price: Int,
     image: String,
-    addToCart: () -> Unit
+    addToCart: () -> Unit,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(180.dp) // Set a fixed width for items in LazyRow
             .padding(8.dp)
             .background(Color.LightGray)
-            .padding(16.dp),
+            .padding(8.dp) // Reduce padding for better appearance
+            .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = rememberImagePainter(image),
+            painter = rememberAsyncImagePainter(image),
             contentDescription = null,
             modifier = Modifier
-                .height(300.dp)
+                .height(120.dp) // Reduce height for better appearance in LazyRow
                 .fillMaxWidth(),
             contentScale = ContentScale.Crop
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = name, fontSize = 24.sp, color = Color.Black)
-        Text(text = description, fontSize = 16.sp, color = Color.Gray)
-        Text(text = "$$price", fontSize = 16.sp, color = Color.Black)
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp)) // Reduce space between elements
+        Text(text = name, fontSize = 14.sp, color = Color.Black)
+        Text(text = description, fontSize = 10.sp, color = Color.Gray)
+        Text(text = "$$price", fontSize = 12.sp, color = Color.Black)
+        Spacer(modifier = Modifier.height(4.dp))
         Button(onClick = addToCart) {
-            Text(text = "Add to Cart")
+            Text(text = "Add to Cart", fontSize = 12.sp) // Reduce button text size
         }
     }
 }

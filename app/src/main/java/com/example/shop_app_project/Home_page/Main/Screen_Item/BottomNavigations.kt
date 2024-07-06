@@ -47,8 +47,13 @@ val navItems = listOf(
     NavigationsItem("cart", "Cart", Icons.Default.ShoppingCart),
     NavigationsItem("profile", "Profile", Icons.Default.Person)
 )
+
 @Composable
-fun BottomNavigations(navController: NavController, userViewModel: UserViewModel, shoppingCartViewModel: ShoppingCartViewModel) {
+fun BottomNavigations(
+    navController: NavController,
+    userViewModel: UserViewModel,
+    shoppingCartViewModel: ShoppingCartViewModel
+) {
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -94,8 +99,20 @@ fun BottomNavigations(navController: NavController, userViewModel: UserViewModel
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("home") { UiHomePage(userViewModel = userViewModel, cartViewModel = shoppingCartViewModel) }
-            composable("search") { SearchPage(userViewModel = userViewModel, shoppingCartViewModel = shoppingCartViewModel) }
+            composable("home") {
+                UiHomePage(
+                    userViewModel = userViewModel,
+                    cartViewModel = shoppingCartViewModel,
+                    navController
+                )
+            }
+            composable("search") {
+                SearchPage(
+                    userViewModel = userViewModel,
+                    shoppingCartViewModel = shoppingCartViewModel,
+                    navController
+                )
+            }
             composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
             composable("profile") { ProfilePage() }
         }

@@ -22,6 +22,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.Home_page.Main.ProductItem
 import com.example.shop_app_project.data.view_model.UserViewModel
@@ -30,7 +33,8 @@ import com.example.shop_app_project.data.view_model.UserViewModel
 @Composable
 fun SearchPage(
     userViewModel: UserViewModel = viewModel(),
-    shoppingCartViewModel: ShoppingCartViewModel = viewModel()
+    shoppingCartViewModel: ShoppingCartViewModel = viewModel(),
+    navController: NavController
 ) {
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -79,7 +83,8 @@ fun SearchPage(
                     image = product.image,
                     addToCart = {
                         shoppingCartViewModel.addToCart(product)
-                    }
+                    },
+                    onClick = {}
                 )
                 Divider(color = Color.Gray, thickness = 1.dp)
             }
@@ -164,3 +169,33 @@ fun ProfilePage() {
         Text(text = "Profile Page", fontSize = 32.sp)
     }
 }
+
+
+@Composable
+fun ProductDetailsPage(product: PorductModel, navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(product.image),
+            contentDescription = null,
+            modifier = Modifier
+                .height(300.dp)
+                .fillMaxWidth(),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = product.name, fontSize = 32.sp, color = Color.Black)
+        Text(text = product.description, fontSize = 16.sp, color = Color.Gray)
+        Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { navController.popBackStack() }) {
+            Text(text = "Back to Products")
+        }
+    }
+}
+
+
+

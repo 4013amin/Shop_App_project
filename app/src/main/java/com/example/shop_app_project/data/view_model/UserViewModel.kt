@@ -3,7 +3,9 @@ package com.example.shop_app_project.data.view_model
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shop_app_project.data.models.product.PorductModel
@@ -18,6 +20,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var registrationResult = mutableStateOf("")
     var login_result = mutableStateOf("")
     var products = mutableStateOf<List<PorductModel>>(arrayListOf())
+    //chech_for_login
+    var isLoggedIn by mutableStateOf(false)
 
     private val shoppingCartViewModel = ShoppingCartViewModel(application)
 
@@ -147,3 +151,6 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         shoppingCartViewModel.clearCart()
     }
 }
+
+
+
