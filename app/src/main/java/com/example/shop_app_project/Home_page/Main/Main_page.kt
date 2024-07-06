@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.Home_page.Main.Screen_Item.BottomNavigations
+import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 
@@ -34,25 +36,22 @@ class MainPage : ComponentActivity() {
         setContent {
             Shop_App_projectTheme {
                 val navController = rememberNavController()
+                val userViewModel: UserViewModel = viewModel()
+                val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
-                // نمایش UI اصلی صفحه
                 Column(modifier = Modifier.fillMaxSize()) {
-                    UiHomePage()
+                    UiHomePage(userViewModel = userViewModel, shoppingCartViewModel)
                 }
 
-                var userViewModel : UserViewModel = viewModel()
-
-                // نمایش ناوبری پایین صفحه
-                BottomNavigations(navController , userViewModel)
+                BottomNavigations(navController, userViewModel , shoppingCartViewModel)
             }
         }
     }
 }
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun UiHomePage(userViewModel: UserViewModel = viewModel()) {
+fun UiHomePage(userViewModel: UserViewModel = viewModel(), cartViewModel: ShoppingCartViewModel) {
     userViewModel.getAllProducts()
     val products by userViewModel.products
     val pagerState = rememberPagerState(pageCount = { products.size })
@@ -78,7 +77,10 @@ fun UiHomePage(userViewModel: UserViewModel = viewModel()) {
                     name = product.name,
                     description = product.description,
                     price = product.price,
-                    image = product.image
+                    image = product.image,
+                    addToCart = {
+                        cartViewModel.addToCart(product)
+                    }
                 )
             }
         }
@@ -86,7 +88,13 @@ fun UiHomePage(userViewModel: UserViewModel = viewModel()) {
 }
 
 @Composable
-fun ProductItem(name: String, description: String, price: Int, image: String) {
+fun ProductItem(
+    name: String,
+    description: String,
+    price: Int,
+    image: String,
+    addToCart: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -107,13 +115,9 @@ fun ProductItem(name: String, description: String, price: Int, image: String) {
         Text(text = name, fontSize = 24.sp, color = Color.Black)
         Text(text = description, fontSize = 16.sp, color = Color.Gray)
         Text(text = "$$price", fontSize = 16.sp, color = Color.Black)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun show_data() {
-    Shop_App_projectTheme {
-        UiHomePage()
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = addToCart) {
+            Text(text = "Add to Cart")
+        }
     }
 }

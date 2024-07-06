@@ -1,29 +1,39 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.shop_app_project.Home_page.Main.UiHomePage
+import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
+
 
 data class NavigationsItem(
     val route: String,
@@ -37,18 +47,32 @@ val navItems = listOf(
     NavigationsItem("cart", "Cart", Icons.Default.ShoppingCart),
     NavigationsItem("profile", "Profile", Icons.Default.Person)
 )
-
-@ExperimentalFoundationApi
 @Composable
-fun BottomNavigations(navController: NavController, userViewModel: UserViewModel) {
+fun BottomNavigations(navController: NavController, userViewModel: UserViewModel, shoppingCartViewModel: ShoppingCartViewModel) {
     Scaffold(
         bottomBar = {
             NavigationBar {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
+                val cartItems by shoppingCartViewModel.cartItems.collectAsState()
+
                 navItems.forEach { item ->
                     NavigationBarItem(
-                        icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+                        icon = {
+                            if (item.route == "cart") {
+                                BadgedBox(badge = {
+                                    if (cartItems.isNotEmpty()) {
+                                        Badge {
+                                            Text(text = cartItems.size.toString())
+                                        }
+                                    }
+                                }) {
+                                    Icon(imageVector = item.icon, contentDescription = item.title)
+                                }
+                            } else {
+                                Icon(imageVector = item.icon, contentDescription = item.title)
+                            }
+                        },
                         label = { Text(item.title) },
                         selected = currentRoute == item.route,
                         onClick = {
@@ -70,9 +94,9 @@ fun BottomNavigations(navController: NavController, userViewModel: UserViewModel
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("home") { UiHomePage() }
-            composable("search") { SearchPage() }
-            composable("cart") { CartPage() }
+            composable("home") { UiHomePage(userViewModel = userViewModel, cartViewModel = shoppingCartViewModel) }
+            composable("search") { SearchPage(userViewModel = userViewModel, shoppingCartViewModel = shoppingCartViewModel) }
+            composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
             composable("profile") { ProfilePage() }
         }
     }

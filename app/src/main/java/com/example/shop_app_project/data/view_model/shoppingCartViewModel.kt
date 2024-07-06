@@ -1,31 +1,50 @@
 package com.example.shop_app_project.data.view_model
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.shop_app_project.Home_page.Main.SharedPreferencesManager.SharedPreferencesManager
 import com.example.shop_app_project.data.models.product.PorductModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class ShoppingCartViewModel : ViewModel() {
-    private val _cartItems = mutableStateListOf<PorductModel>()
-    val cartItems = mutableStateOf(_cartItems)
+class ShoppingCartViewModel(application: Application) : AndroidViewModel(application) {
+    private val context = getApplication<Application>().applicationContext
+
+    private val _cartItems = MutableStateFlow<List<PorductModel>>(emptyList())
+    val cartItems: StateFlow<List<PorductModel>> get() = _cartItems
+
+    init {
+        viewModelScope.launch {
+            _cartItems.value = SharedPreferencesManager.loadCartItems(context)
+        }
+    }
 
     fun addToCart(product: PorductModel) {
-        _cartItems.add(product)
-        cartItems.value = _cartItems // نیازی به تبدیل به SnapshotStateList نیست
+        viewModelScope.launch {
+            val updatedCartItems = _cartItems.value.toMutableList().apply { add(product) }
+            _cartItems.value = updatedCartItems
+            SharedPreferencesManager.saveCartItems(context, updatedCartItems)
+        }
     }
 
     fun removeFromCart(product: PorductModel) {
-        _cartItems.remove(product)
-        cartItems.value = _cartItems // نیازی به تبدیل به SnapshotStateList نیست
-    }
-
-    fun getCartItems(): List<PorductModel> {
-        return _cartItems.toList()
+        viewModelScope.launch {
+            val updatedCartItems = _cartItems.value.toMutableList().apply { remove(product) }
+            _cartItems.value = updatedCartItems
+            SharedPreferencesManager.saveCartItems(context, updatedCartItems)
+        }
     }
 
     fun clearCart() {
-        _cartItems.clear()
-        cartItems.value = _cartItems // نیازی به تبدیل به SnapshotStateList نیست
+        viewModelScope.launch {
+            _cartItems.value = emptyList()
+            SharedPreferencesManager.clearCartItems(context)
+        }
+    }
+
+    fun getCartItems(): List<PorductModel> {
+        return _cartItems.value
     }
 }

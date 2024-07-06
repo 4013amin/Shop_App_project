@@ -19,7 +19,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var login_result = mutableStateOf("")
     var products = mutableStateOf<List<PorductModel>>(arrayListOf())
 
-    private val shoppingCartViewModel = ShoppingCartViewModel()
+    private val shoppingCartViewModel = ShoppingCartViewModel(application)
 
     private val sharedPreferences =
         application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
