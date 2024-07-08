@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,14 +32,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.shop_app_project.Home_page.Main.Screen_Item.BottomNavigations
-import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.TextField
-
-import kotlin.random.Random
+import com.example.shop_app_project.data.models.product.Category
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,25 +56,8 @@ class MainActivity : ComponentActivity() {
 
 data class CategoryModel(
     val name: String,
-    val products: List<PorductModel>
+    val image: String // URL تصویر
 )
-
-//fun generateFakeProducts(count: Int): List<PorductModel> {
-//    val products = mutableListOf<PorductModel>()
-//    for (i in 1..count) {
-//        products.add(
-//            PorductModel(
-//                id = i,
-//                name = "Product $i",
-//                description = "Description $i",
-//                price = Random.nextInt(10, 100),
-//                image = "https://via.placeholder.com/150"
-//
-//            )
-//        )
-//    }
-//    return products
-//}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -87,16 +67,11 @@ fun UiHomePage(
     navController: NavController
 ) {
     val products by userViewModel.products
+    val categories by userViewModel.category
 
     LaunchedEffect(Unit) {
         userViewModel.getAllProducts()
     }
-
-    val categories = listOf(
-        CategoryModel("Category 1", products.take(10)),
-        CategoryModel("Category 2", products.drop(10).take(10)),
-        CategoryModel("Category 3", products.drop(20))
-    )
 
     LazyColumn(
         modifier = Modifier
@@ -126,7 +101,6 @@ fun UiHomePage(
             }
         }
 
-
         item {
             Text(
                 text = "#SpecialForYou",
@@ -148,7 +122,7 @@ fun UiHomePage(
                 LaunchedEffect(Unit) {
                     while (true) {
                         pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount)
-                        kotlinx.coroutines.delay(3000)
+                        delay(3000)
                     }
                 }
 
@@ -196,35 +170,46 @@ fun UiHomePage(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Category",
-                        fontSize = 18.sp,
-                        color = Color.Black
-                    )
-                    Text(
-                        text = "See All",
+                        text = "بیشتر",
                         fontSize = 14.sp,
                         color = Color.Red,
                         modifier = Modifier.clickable { /* TODO: See All action */ }
                     )
+                    Text(
+                        text = "دسته بندی ها",
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
                 }
             }
 
-            categories.forEach { category ->
-                item {
+            item {
+                val pagerState =
+                    rememberPagerState(pageCount = { categories.size / categories.size })
+
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount)
+                        delay(100)
+                    }
+                }
+
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .height(120.dp)
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) { page ->
+                    val start = page * 10
+                    val end = (start + 10).coerceAtMost(categories.size)
+                    val categoriesInPage = categories.subList(start, end)
+
                     LazyRow(
                         modifier = Modifier.padding(vertical = 8.dp)
                     ) {
-                        items(category.products) { product ->
-                            ProductItem(
-                                name = product.name,
-                                description = product.description,
-                                price = product.price,
-                                image = product.image,
-                                addToCart = {
-                                    cartViewModel.addToCart(product)
-                                },
-                                onClick = {}
-                            )
+                        items(categoriesInPage) { category ->
+                            CategoryItem(image = category.image, name = category.name)
                         }
                     }
                 }
@@ -239,15 +224,15 @@ fun UiHomePage(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Flash Sale",
-                        fontSize = 18.sp,
-                        color = Color.Black
-                    )
-                    Text(
-                        text = "See All",
+                        text = "بیشتر",
                         fontSize = 14.sp,
                         color = Color.Red,
-                        modifier = Modifier.clickable { /* TODO: See All action */ }
+                        modifier = Modifier.clickable { }
+                    )
+                    Text(
+                        text = "محصولات",
+                        fontSize = 18.sp,
+                        color = Color.Black
                     )
                 }
             }
@@ -278,6 +263,33 @@ fun <T> List<T>.cycle(): List<T> {
     return this + this
 }
 
+@Composable
+fun CategoryItem(image: String, name: String) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .width(100.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(model = image),
+            contentDescription = null,
+            modifier = Modifier
+                .size(80.dp)
+                .clip(RoundedCornerShape(50))
+                .background(Color.LightGray),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = name,
+            fontSize = 16.sp,
+            color = Color.Black,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
 
 @Composable
 fun ProductItem(

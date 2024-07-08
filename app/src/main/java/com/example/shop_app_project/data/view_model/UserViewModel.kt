@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.shop_app_project.data.models.product.Category
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.models.register.login_model
 import com.example.shop_app_project.data.utils.Utils_ret
@@ -20,6 +21,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var registrationResult = mutableStateOf("")
     var login_result = mutableStateOf("")
     var products = mutableStateOf<List<PorductModel>>(arrayListOf())
+    var category = mutableStateOf<List<Category>>(arrayListOf())
+
+
     //chech_for_login
     var isLoggedIn by mutableStateOf(false)
 
@@ -112,6 +116,33 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                     "UserViewModel",
                     "Failed to fetch products: ${response.errorBody()?.string()}"
                 )
+            }
+
+            getCategories()
+        }
+    }
+
+
+    //send Categories request
+    fun getCategories() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = try {
+                Utils_ret.api.getCategories()
+            } catch (e: IOException) {
+                Log.e("UserViewModel", "Network error occurred while fetching products.", e)
+                return@launch
+            } catch (e: HttpException) {
+                Log.e(
+                    "UserViewModel",
+                    "HTTP error occurred while fetching products: ${e.code()}",
+                    e
+
+                )
+                return@launch
+            }
+
+            if (response.isSuccessful && response.body() != null) {
+                category.value = response.body()!!
             }
         }
     }

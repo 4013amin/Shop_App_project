@@ -1,5 +1,6 @@
 package com.example.shop_app_project.data.api
 
+import com.example.shop_app_project.data.models.product.Category
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.models.register.login_model
 import retrofit2.Response
@@ -24,5 +25,8 @@ interface login {
     @GET("/api/products/")
     suspend fun getProducts(): Response<List<PorductModel>>
 
+
+    @GET("/api/categories/")
+    suspend fun getCategories(): Response<List<Category>>
 
 }
