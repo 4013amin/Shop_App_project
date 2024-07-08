@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,6 +38,9 @@ import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.TextField
+
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +62,23 @@ data class CategoryModel(
     val products: List<PorductModel>
 )
 
+//fun generateFakeProducts(count: Int): List<PorductModel> {
+//    val products = mutableListOf<PorductModel>()
+//    for (i in 1..count) {
+//        products.add(
+//            PorductModel(
+//                id = i,
+//                name = "Product $i",
+//                description = "Description $i",
+//                price = Random.nextInt(10, 100),
+//                image = "https://via.placeholder.com/150"
+//
+//            )
+//        )
+//    }
+//    return products
+//}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UiHomePage(
@@ -67,8 +86,11 @@ fun UiHomePage(
     cartViewModel: ShoppingCartViewModel,
     navController: NavController
 ) {
-    userViewModel.getAllProducts()
     val products by userViewModel.products
+
+    LaunchedEffect(Unit) {
+        userViewModel.getAllProducts()
+    }
 
     val categories = listOf(
         CategoryModel("Category 1", products.take(10)),
@@ -84,11 +106,33 @@ fun UiHomePage(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Location",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = "New York, USA",
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+            }
+        }
+
+
+        item {
             Text(
-                text = "Products",
-                fontSize = 32.sp,
+                text = "#SpecialForYou",
+                fontSize = 18.sp,
                 color = Color.Black,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
 
@@ -97,8 +141,9 @@ fun UiHomePage(
                 Log.d("UiHomePage", "No products available.")
             }
         } else {
+            val cyclicProducts = products.cycle()
             item {
-                val pagerState = rememberPagerState(pageCount = { 10.coerceAtMost(products.size) })
+                val pagerState = rememberPagerState(pageCount = { cyclicProducts.size / 3 })
 
                 LaunchedEffect(Unit) {
                     while (true) {
@@ -112,19 +157,29 @@ fun UiHomePage(
                     modifier = Modifier
                         .height(300.dp)
                         .fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 100.dp)
+                    contentPadding = PaddingValues(horizontal = 0.dp)
                 ) { page ->
-                    val product = products[page]
-                    ProductItem(
-                        name = product.name,
-                        description = product.description,
-                        price = product.price,
-                        image = product.image,
-                        addToCart = {
-                            cartViewModel.addToCart(product)
-                        },
-                        onClick = {}
-                    )
+                    val start = page * 3
+                    val end = (start + 3).coerceAtMost(cyclicProducts.size)
+                    val productsInPage = cyclicProducts.subList(start, end)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        productsInPage.forEach { product ->
+                            ProductItem(
+                                name = product.name,
+                                description = product.description,
+                                price = product.price,
+                                image = product.image,
+                                addToCart = {
+                                    cartViewModel.addToCart(product)
+                                },
+                                onClick = {}
+                            )
+                        }
+                    }
                 }
             }
 
@@ -132,18 +187,33 @@ fun UiHomePage(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            items(categories) { category ->
-                this@LazyColumn.item {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = category.name,
-                        fontSize = 24.sp,
-                        color = Color.Black,
-                        modifier = Modifier.padding(8.dp)
+                        text = "Category",
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "See All",
+                        fontSize = 14.sp,
+                        color = Color.Red,
+                        modifier = Modifier.clickable { /* TODO: See All action */ }
                     )
                 }
+            }
 
-                this@LazyColumn.item {
-                    LazyRow {
+            categories.forEach { category ->
+                item {
+                    LazyRow(
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
                         items(category.products) { product ->
                             ProductItem(
                                 name = product.name,
@@ -159,9 +229,55 @@ fun UiHomePage(
                     }
                 }
             }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Flash Sale",
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "See All",
+                        fontSize = 14.sp,
+                        color = Color.Red,
+                        modifier = Modifier.clickable { /* TODO: See All action */ }
+                    )
+                }
+            }
+
+            item {
+                LazyRow(
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    items(products) { product ->
+                        ProductItem(
+                            name = product.name,
+                            description = product.description,
+                            price = product.price,
+                            image = product.image,
+                            addToCart = {
+                                cartViewModel.addToCart(product)
+                            },
+                            onClick = {}
+                        )
+                    }
+                }
+            }
         }
     }
 }
+
+fun <T> List<T>.cycle(): List<T> {
+    return this + this
+}
+
 
 @Composable
 fun ProductItem(
