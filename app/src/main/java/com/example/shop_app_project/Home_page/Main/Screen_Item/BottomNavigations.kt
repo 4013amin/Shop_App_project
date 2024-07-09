@@ -115,6 +115,7 @@ fun BottomNavigations(
             }
             composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
             composable("profile") { ProfilePage() }
+            composable("search") { SearchPage(navController = navController) }
         }
     }
 }

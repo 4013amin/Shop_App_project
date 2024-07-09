@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.Home_page.Main.ProductItem
+import com.example.shop_app_project.Home_page.login.bottom_navigations
 import com.example.shop_app_project.data.view_model.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,14 +40,18 @@ fun SearchPage(
 ) {
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
 
-    // Trigger fetching of products when the composable is first created
     LaunchedEffect(Unit) {
         userViewModel.getAllProducts()
     }
 
     val products by userViewModel.products
 
-    // Logging the size of the products list
+    //search_filter
+    var search_filter = products.filter { product ->
+        product.name.contains(searchText.text, ignoreCase = true)
+    }
+
+
     Log.d("SearchPage", "Number of products: ${products.size}")
 
     Column(
@@ -72,10 +78,10 @@ fun SearchPage(
             textStyle = MaterialTheme.typography.bodyLarge
         )
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(products.filter {
-                it.name.contains(searchText.text, ignoreCase = true)
-            }) { product ->
+        LazyColumn(
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            items(search_filter) { product ->
                 ProductItem(
                     name = product.name,
                     description = product.description,
@@ -86,9 +92,9 @@ fun SearchPage(
                     },
                     onClick = {}
                 )
-                Divider(color = Color.Gray, thickness = 1.dp)
             }
         }
+
     }
 }
 

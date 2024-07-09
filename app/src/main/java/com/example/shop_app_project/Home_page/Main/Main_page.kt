@@ -36,6 +36,8 @@ import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.shop_app_project.Home_page.Main.Screen_Item.SearchPage
+import com.example.shop_app_project.Home_page.login.nav
 import com.example.shop_app_project.data.models.product.Category
 import kotlinx.coroutines.delay
 
@@ -56,7 +58,7 @@ class MainActivity : ComponentActivity() {
 
 data class CategoryModel(
     val name: String,
-    val image: String // URL تصویر
+    val image: String
 )
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -80,26 +82,26 @@ fun UiHomePage(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Location",
-                    fontSize = 14.sp,
-                    color = Color.Black
-                )
-                Text(
-                    text = "New York, USA",
-                    fontSize = 14.sp,
-                    color = Color.Black
-                )
-            }
-        }
+//        item {
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(vertical = 16.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text(
+//                    text = "Location",
+//                    fontSize = 14.sp,
+//                    color = Color.Black
+//                )
+//                Text(
+//                    text = "New York, USA",
+//                    fontSize = 14.sp,
+//                    color = Color.Black
+//                )
+//            }
+//        }
 
         item {
             Text(
@@ -169,12 +171,12 @@ fun UiHomePage(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "بیشتر",
-                        fontSize = 14.sp,
-                        color = Color.Red,
-                        modifier = Modifier.clickable { /* TODO: See All action */ }
-                    )
+//                    Text(
+//                        text = "بیشتر",
+//                        fontSize = 14.sp,
+//                        color = Color.Red,
+//                        modifier = Modifier.clickable { /* TODO: See All action */ }
+//                    )
                     Text(
                         text = "دسته بندی ها",
                         fontSize = 18.sp,
@@ -227,10 +229,12 @@ fun UiHomePage(
                         text = "بیشتر",
                         fontSize = 14.sp,
                         color = Color.Red,
-                        modifier = Modifier.clickable { }
+                        modifier = Modifier.clickable {
+                            navController.navigate("search")
+                        }
                     )
                     Text(
-                        text = "محصولات",
+                        text = "محصولات ویژه",
                         fontSize = 18.sp,
                         color = Color.Black
                     )
