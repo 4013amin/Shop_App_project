@@ -36,9 +36,8 @@ import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.shop_app_project.Home_page.Main.Screen_Item.SearchPage
-import com.example.shop_app_project.Home_page.login.nav
-import com.example.shop_app_project.data.models.product.Category
+import com.example.shop_app_project.data.models.product.PorductModel
+import com.google.gson.Gson
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -49,6 +48,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val userViewModel: UserViewModel = viewModel()
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
+
 
                 BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
@@ -245,6 +245,7 @@ fun UiHomePage(
                 LazyRow(
                     modifier = Modifier.padding(vertical = 8.dp)
                 ) {
+                    val productJson = Gson().toJson(products)
                     items(products) { product ->
                         ProductItem(
                             name = product.name,
@@ -254,7 +255,9 @@ fun UiHomePage(
                             addToCart = {
                                 cartViewModel.addToCart(product)
                             },
-                            onClick = {}
+                            onClick = {
+                                navController.navigate("single_product/${product.id}")
+                            }
                         )
                     }
                 }

@@ -1,8 +1,5 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -19,18 +16,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.shop_app_project.Home_page.Main.UiHomePage
+import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 
@@ -47,12 +42,13 @@ val navItems = listOf(
     NavigationsItem("cart", "Cart", Icons.Default.ShoppingCart),
     NavigationsItem("profile", "Profile", Icons.Default.Person)
 )
+var products = mutableStateOf<List<PorductModel>>(arrayListOf())
 
 @Composable
 fun BottomNavigations(
     navController: NavController,
     userViewModel: UserViewModel,
-    shoppingCartViewModel: ShoppingCartViewModel
+    shoppingCartViewModel: ShoppingCartViewModel,
 ) {
     Scaffold(
         bottomBar = {
@@ -103,19 +99,30 @@ fun BottomNavigations(
                 UiHomePage(
                     userViewModel = userViewModel,
                     cartViewModel = shoppingCartViewModel,
-                    navController
+                    navController = navController
                 )
             }
             composable("search") {
                 SearchPage(
                     userViewModel = userViewModel,
                     shoppingCartViewModel = shoppingCartViewModel,
-                    navController
+                    navController = navController
                 )
             }
             composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
             composable("profile") { ProfilePage() }
-            composable("search") { SearchPage(navController = navController) }
+            composable("single_product/{productId}") { backStackEntry ->
+                val productId = backStackEntry.arguments?.getString("productId")?.toInt()
+                productId?.let {
+                    ProductDetailsPage(
+                        navController = navController,
+                        productId = it,
+                        userViewModel = userViewModel ,
+                        shoppingCartViewModel
+                    )
+                }
+            }
+
         }
     }
 }

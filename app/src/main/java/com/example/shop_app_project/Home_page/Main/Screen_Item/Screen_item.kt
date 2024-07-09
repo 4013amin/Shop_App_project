@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,11 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.Home_page.Main.ProductItem
-import com.example.shop_app_project.Home_page.login.bottom_navigations
 import com.example.shop_app_project.data.view_model.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,30 +175,40 @@ fun ProfilePage() {
 
 
 @Composable
-fun ProductDetailsPage(product: PorductModel, navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(product.image),
-            contentDescription = null,
+fun ProductDetailsPage(
+    navController: NavController,
+    productId: Int,
+    userViewModel: UserViewModel,
+    cartViewModel: ShoppingCartViewModel
+) {
+    val product = userViewModel.products.value.find { it.id == productId }
+
+    product?.let {
+        Column(
             modifier = Modifier
-                .height(300.dp)
-                .fillMaxWidth(),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = product.name, fontSize = 32.sp, color = Color.Black)
-        Text(text = product.description, fontSize = 16.sp, color = Color.Gray)
-        Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { navController.popBackStack() }) {
-            Text(text = "Back to Products")
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(it.image),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = it.name, fontSize = 24.sp, color = Color.Black)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = it.description, fontSize = 16.sp, color = Color.Gray)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "\$${it.price}", fontSize = 20.sp, color = Color.Black)
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = { cartViewModel.addToCart(product) }) {
+                Text(text = "Add to Cart")
+            }
         }
+    } ?: run {
+        Text(text = "Product not found", fontSize = 16.sp, color = Color.Red)
     }
 }
-
-
-
