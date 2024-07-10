@@ -119,7 +119,7 @@ fun UiHomePage(
         } else {
             val cyclicProducts = products.cycle()
             item {
-                val pagerState = rememberPagerState(pageCount = { cyclicProducts.size / 3 })
+                val pagerState = rememberPagerState(pageCount = { cyclicProducts.size / 2 })
 
                 LaunchedEffect(Unit) {
                     while (true) {
@@ -309,10 +309,10 @@ fun ProductItem(
 ) {
     Column(
         modifier = Modifier
-            .width(180.dp) // Set a fixed width for items in LazyRow
+            .width(180.dp)
             .padding(8.dp)
-            .background(Color.LightGray)
-            .padding(8.dp) // Reduce padding for better appearance
+            .background(Color.White)
+            .padding(8.dp)
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -320,24 +320,24 @@ fun ProductItem(
             painter = rememberAsyncImagePainter(image),
             contentDescription = null,
             modifier = Modifier
-                .height(120.dp) // Reduce height for better appearance in LazyRow
+                .height(120.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp)), // Make image rounded
+                .clip(RoundedCornerShape(26.dp)),
             contentScale = ContentScale.Crop
         )
-        Spacer(modifier = Modifier.height(8.dp)) // Reduce space between elements
-        Text(text = name, fontSize = 14.sp, color = Color.Black) // Set text color to white
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = name, fontSize = 14.sp, color = Color.Black)
         Text(
             text = description,
             fontSize = 10.sp,
             color = Color.Gray,
-            maxLines = 1, // Limit to 1 line
-            overflow = TextOverflow.Ellipsis // Add ellipsis if the text is too long
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
-        Text(text = "$$price", fontSize = 12.sp, color = Color.Black) // Set text color to white
+        Text(text = "$$price", fontSize = 12.sp, color = Color.Black)
         Spacer(modifier = Modifier.height(4.dp))
         Button(onClick = addToCart) {
-            Text(text = "Add to Cart", fontSize = 12.sp) // Reduce button text size
+            Text(text = "Add to Cart", fontSize = 12.sp)
         }
     }
 }
