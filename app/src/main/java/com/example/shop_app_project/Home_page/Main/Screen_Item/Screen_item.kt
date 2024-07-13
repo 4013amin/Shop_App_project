@@ -9,6 +9,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -33,7 +36,7 @@ import com.example.shop_app_project.data.view_model.UserViewModel
 fun SearchPage(
     userViewModel: UserViewModel = viewModel(),
     shoppingCartViewModel: ShoppingCartViewModel = viewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -47,7 +50,6 @@ fun SearchPage(
     var search_filter = products.filter { product ->
         product.name.contains(searchText.text, ignoreCase = true)
     }
-
 
     Log.d("SearchPage", "Number of products: ${products.size}")
 
@@ -75,8 +77,12 @@ fun SearchPage(
             textStyle = MaterialTheme.typography.bodyLarge
         )
 
-        LazyColumn(
-            modifier = Modifier.padding(vertical = 8.dp)
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(2),
+            contentPadding = PaddingValues(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp)
         ) {
             items(search_filter) { product ->
                 ProductItem(
@@ -87,11 +93,13 @@ fun SearchPage(
                     addToCart = {
                         shoppingCartViewModel.addToCart(product)
                     },
-                    onClick = {}
+                    onClick = {
+                        navController.navigate("single_product/${product.id}")
+                    }
                 )
+
             }
         }
-
     }
 }
 
@@ -148,7 +156,7 @@ fun CartItem(product: PorductModel, onRemove: () -> Unit) {
 
         Column {
             Text(text = product.name, fontSize = 20.sp)
-            Text(text = product.description, fontSize = 14.sp, color = Color.Gray)
+            Text(text = product.description, fontSize = 14.sp, color = Color.Gray , maxLines = 1)
             Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
         }
 
@@ -179,7 +187,7 @@ fun ProductDetailsPage(
     navController: NavController,
     productId: Int,
     userViewModel: UserViewModel,
-    cartViewModel: ShoppingCartViewModel
+    cartViewModel: ShoppingCartViewModel,
 ) {
     val product = userViewModel.products.value.find { it.id == productId }
 

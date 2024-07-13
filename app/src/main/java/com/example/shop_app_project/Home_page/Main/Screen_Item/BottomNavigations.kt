@@ -33,7 +33,7 @@ import com.example.shop_app_project.data.view_model.UserViewModel
 data class NavigationsItem(
     val route: String,
     val title: String,
-    val icon: ImageVector
+    val icon: ImageVector,
 )
 
 val navItems = listOf(
@@ -112,15 +112,11 @@ fun BottomNavigations(
             composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
             composable("profile") { ProfilePage() }
             composable("single_product/{productId}") { backStackEntry ->
-                val productId = backStackEntry.arguments?.getString("productId")?.toInt()
+                val productId = backStackEntry.arguments?.getString("productId")?.toIntOrNull()
                 productId?.let {
-                    ProductDetailsPage(
-                        navController = navController,
-                        productId = it,
-                        userViewModel = userViewModel ,
-                        shoppingCartViewModel
-                    )
+                    ProductDetailsPage(navController, it, userViewModel, shoppingCartViewModel)
                 }
+
             }
 
         }
