@@ -159,7 +159,10 @@ fun CartItem(product: PorductModel, onRemove: () -> Unit) {
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Column {
+        Column(
+            modifier = Modifier
+                .size(105.dp)
+        ) {
             Text(text = product.name, fontSize = 20.sp)
             Text(text = product.description, fontSize = 14.sp, color = Color.Gray, maxLines = 1)
             Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
