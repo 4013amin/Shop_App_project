@@ -5,6 +5,7 @@ import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.Home_page.Main.ProductItem
 import com.example.shop_app_project.data.view_model.UserViewModel
+import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -156,7 +158,7 @@ fun CartItem(product: PorductModel, onRemove: () -> Unit) {
 
         Column {
             Text(text = product.name, fontSize = 20.sp)
-            Text(text = product.description, fontSize = 14.sp, color = Color.Gray , maxLines = 1)
+            Text(text = product.description, fontSize = 14.sp, color = Color.Gray, maxLines = 1)
             Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
         }
 
@@ -185,11 +187,12 @@ fun ProfilePage() {
 @Composable
 fun ProductDetailsPage(
     navController: NavController,
-    productId: Int,
+    productJson: String,
     userViewModel: UserViewModel,
     cartViewModel: ShoppingCartViewModel,
 ) {
-    val product = userViewModel.products.value.find { it.id == productId }
+    val gson = remember { Gson() }
+    val product = gson.fromJson(productJson, PorductModel::class.java)
 
     product?.let {
         Column(
@@ -209,10 +212,13 @@ fun ProductDetailsPage(
             Text(text = it.name, fontSize = 24.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = it.description, fontSize = 16.sp, color = Color.Gray)
+            Text(text = it.created_at, fontSize = 16.sp, color = Color.Gray)
+            Text(text = "\$${it.stock}", fontSize = 20.sp, color = Color.Black)
+            Text(text = "\$${it.category}", fontSize = 20.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "\$${it.price}", fontSize = 20.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { cartViewModel.addToCart(product) }) {
+            Button(onClick = { cartViewModel.addToCart(it) }) {
                 Text(text = "Add to Cart")
             }
         }

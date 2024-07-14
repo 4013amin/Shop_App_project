@@ -21,9 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.shop_app_project.Home_page.Main.UiHomePage
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
@@ -111,14 +113,12 @@ fun BottomNavigations(
             }
             composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
             composable("profile") { ProfilePage() }
-            composable("single_product/{productId}") { backStackEntry ->
-                val productId = backStackEntry.arguments?.getString("productId")?.toIntOrNull()
-                productId?.let {
+            composable("single_product?product={product}") { backStackEntry ->
+                val productJson = backStackEntry.arguments?.getString("product")
+                productJson?.let {
                     ProductDetailsPage(navController, it, userViewModel, shoppingCartViewModel)
                 }
-
             }
-
         }
     }
 }

@@ -40,6 +40,8 @@ import com.example.shop_app_project.data.models.product.PorductModel
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
 
+val gson = Gson()
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +60,7 @@ class MainActivity : ComponentActivity() {
 
 data class CategoryModel(
     val name: String,
-    val image: String
+    val image: String,
 )
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -66,7 +68,7 @@ data class CategoryModel(
 fun UiHomePage(
     userViewModel: UserViewModel = viewModel(),
     cartViewModel: ShoppingCartViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
     val products by userViewModel.products
     val categories by userViewModel.category
@@ -256,8 +258,8 @@ fun UiHomePage(
                                 cartViewModel.addToCart(product)
                             },
                             onClick = {
-                                navController.navigate("single_product/${product.id}")
-                            }
+                                val productJson = gson.toJson(product)
+                                navController.navigate("single_product?product=$productJson")                            }
                         )
                     }
                 }
@@ -305,7 +307,7 @@ fun ProductItem(
     price: Int,
     image: String,
     addToCart: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
