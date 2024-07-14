@@ -154,7 +154,10 @@ fun UiHomePage(
                                 addToCart = {
                                     cartViewModel.addToCart(product)
                                 },
-                                onClick = {}
+                                onClick = {
+                                    val productGson = gson.toJson(product)
+                                    navController.navigate("single_product?product=${productGson}")
+                                }
                             )
                         }
                     }
@@ -259,7 +262,8 @@ fun UiHomePage(
                             },
                             onClick = {
                                 val productJson = gson.toJson(product)
-                                navController.navigate("single_product?product=$productJson")                            }
+                                navController.navigate("single_product?product=$productJson")
+                            }
                         )
                     }
                 }

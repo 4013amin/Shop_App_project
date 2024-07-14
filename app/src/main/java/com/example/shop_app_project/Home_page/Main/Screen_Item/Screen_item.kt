@@ -33,6 +33,8 @@ import com.example.shop_app_project.Home_page.Main.ProductItem
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
 
+var gson = Gson()
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchPage(
@@ -96,7 +98,8 @@ fun SearchPage(
                         shoppingCartViewModel.addToCart(product)
                     },
                     onClick = {
-                        navController.navigate("single_product/${product.id}")
+                        val productGson = gson.toJson(product)
+                        navController.navigate("single_product?product=${productGson}")
                     }
                 )
 
