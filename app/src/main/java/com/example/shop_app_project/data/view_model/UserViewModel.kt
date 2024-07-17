@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.shop_app_project.data.models.Profile.Profile
 import com.example.shop_app_project.data.models.product.Category
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.models.register.login_model
@@ -23,9 +24,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     var login_result = mutableStateOf("")
     var products = mutableStateOf<List<PorductModel>>(arrayListOf())
     var category = mutableStateOf<List<Category>>(arrayListOf())
+    var profile = mutableStateOf<List<Profile>>(arrayListOf())
 
-
-    //chech_for_login
     var isLoggedIn by mutableStateOf(false)
 
     private val shoppingCartViewModel = ShoppingCartViewModel(application)
@@ -148,6 +148,25 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    //Profile
+    fun getProfile() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = try {
+                Utils_ret.api.getProfile()
+            } catch (e: IOException) {
+                Log.e("getProfileErrorIO", e.toString())
+                return@launch
+            } catch (e: HttpException) {
+                Log.e("getProfileErrorHTTP", e.toString())
+                return@launch
+            }
+
+            if (response.isSuccessful && response.body() != null) {
+                profile.value = response.body()!!
+            }
+        }
+    }
+
 
     fun saveCredentials(username: String, password: String) {
         with(sharedPreferences.edit()) {
@@ -163,22 +182,21 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         return Pair(username, password)
     }
 
-    // تابع برای اضافه کردن به سبد خرید
+
     fun addToCart(product: PorductModel) {
         shoppingCartViewModel.addToCart(product)
     }
 
-    // تابع برای حذف از سبد خرید
+
     fun removeFromCart(product: PorductModel) {
         shoppingCartViewModel.removeFromCart(product)
     }
 
-    // تابع برای دریافت لیست محصولات در سبد خرید
+
     fun getCartItems(): List<PorductModel> {
         return shoppingCartViewModel.getCartItems()
     }
 
-    // تابع برای پاک کردن سبد خرید
     fun clearCart() {
         shoppingCartViewModel.clearCart()
     }

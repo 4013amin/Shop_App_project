@@ -51,7 +51,6 @@ class MainActivity : ComponentActivity() {
                 val userViewModel: UserViewModel = viewModel()
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
-
                 BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }

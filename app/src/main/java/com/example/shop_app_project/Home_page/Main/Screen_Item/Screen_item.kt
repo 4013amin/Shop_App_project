@@ -22,14 +22,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.Home_page.Main.ProductItem
+import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
 
@@ -181,11 +187,119 @@ fun ProfilePage() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(16.dp),
+            .background(color = Color(android.graphics.Color.parseColor("#f2f1f6"))),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Profile Page", fontSize = 32.sp)
+        ConstraintLayout(
+            modifier = Modifier
+                .height(250.dp)
+                .background(color = Color(android.graphics.Color.parseColor("#32357a")))
+        ) {
+            val (topImage, profileImage, title, backButton, editButton) = createRefs()
+
+            Image(
+                painter = painterResource(id = R.drawable.arc_3),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .constrainAs(topImage) {
+                        bottom.linkTo(parent.bottom)
+                    }
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.user_1),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .constrainAs(profileImage) {
+                        top.linkTo(parent.top, margin = 16.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+
+            Text(
+                text = "Profile Name",
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .constrainAs(title) {
+                        top.linkTo(profileImage.bottom, margin = 8.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+
+            IconButton(
+                onClick = { /* TODO: handle back button click */ },
+                modifier = Modifier
+                    .constrainAs(backButton) {
+                        top.linkTo(parent.top, margin = 16.dp)
+                        start.linkTo(parent.start, margin = 16.dp)
+                    }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.back),
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+
+            IconButton(
+                onClick = { /* TODO: handle edit button click */ },
+                modifier = Modifier
+                    .constrainAs(editButton) {
+                        top.linkTo(parent.top, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 16.dp)
+                    }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.write),
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "About Me",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "This is a sample description about the user. It can contain information like interests, hobbies, etc.",
+                fontSize = 14.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Button(
+                onClick = { /* TODO: handle button click */ },
+                colors = ButtonDefaults.buttonColors(Color(android.graphics.Color.parseColor("#32357a")))
+            ) {
+                Text(
+                    text = "Edit Profile",
+                    color = Color.White
+                )
+            }
+        }
     }
 }
 
@@ -231,4 +345,10 @@ fun ProductDetailsPage(
     } ?: run {
         Text(text = "Product not found", fontSize = 16.sp, color = Color.Red)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun showProfile() {
+    ProfilePage()
 }

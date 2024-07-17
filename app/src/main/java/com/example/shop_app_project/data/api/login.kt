@@ -1,5 +1,6 @@
 package com.example.shop_app_project.data.api
 
+import com.example.shop_app_project.data.models.Profile.Profile
 import com.example.shop_app_project.data.models.product.Category
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.models.register.login_model
@@ -28,5 +29,8 @@ interface login {
 
     @GET("/api/categories/")
     suspend fun getCategories(): Response<List<Category>>
+
+    @GET()
+    suspend fun getProfile(): Response<Profile>
 
 }
