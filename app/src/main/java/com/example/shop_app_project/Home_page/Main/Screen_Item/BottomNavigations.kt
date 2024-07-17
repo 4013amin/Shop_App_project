@@ -112,7 +112,7 @@ fun BottomNavigations(
                 )
             }
             composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
-            composable("profile") { ProfilePage() }
+            composable("profile") { ProfilePage(navController = navController) }
             composable("single_product?product={product}") { backStackEntry ->
                 val productJson = backStackEntry.arguments?.getString("product")
                 productJson?.let {

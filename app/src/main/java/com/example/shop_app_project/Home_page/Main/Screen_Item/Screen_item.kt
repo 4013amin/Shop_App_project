@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.Home_page.Main.ProductItem
@@ -40,7 +41,6 @@ import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
 
 var gson = Gson()
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchPage(
@@ -183,7 +183,7 @@ fun CartItem(product: PorductModel, onRemove: () -> Unit) {
 }
 
 @Composable
-fun ProfilePage() {
+fun ProfilePage(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -236,7 +236,7 @@ fun ProfilePage() {
             )
 
             IconButton(
-                onClick = { /* TODO: handle back button click */ },
+                onClick = { navController.navigate("home") },
                 modifier = Modifier
                     .constrainAs(backButton) {
                         top.linkTo(parent.top, margin = 16.dp)
@@ -345,10 +345,4 @@ fun ProductDetailsPage(
     } ?: run {
         Text(text = "Product not found", fontSize = 16.sp, color = Color.Red)
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun showProfile() {
-    ProfilePage()
 }
