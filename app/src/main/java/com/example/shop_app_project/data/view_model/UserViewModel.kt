@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shop_app_project.data.models.Profile.Profile
 import com.example.shop_app_project.data.models.product.Category
@@ -33,10 +32,17 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences =
         application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
-    fun sendRegister(username: String, address: String) {
+    fun sendRegister(
+        username: String,
+        password: String,
+        phone: String,
+        city: String,
+        address: String,
+        postalCode: String,
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = try {
-                Utils_ret.api.registerUser(username, address)
+                Utils_ret.api.registerUser(username, password, phone, city, address, postalCode)
             } catch (e: IOException) {
                 Log.e("UserViewModel", "Network error occurred during registration.", e)
                 registrationResult.value = "Network error occurred."
@@ -54,7 +60,11 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 //shared
                 var editor = sharedPreferences.edit()
                 editor.putString("username", username)
-                editor.putString("password", address)
+                editor.putString("password", password)
+                editor.putString("phone", phone)
+                editor.putString("city", city)
+                editor.putString("address", address)
+                editor.putString("postalCode", postalCode)
                 editor.apply()
 
             } else {
@@ -63,33 +73,33 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun sendLogin(username: String, address: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = try {
-                val user = login_model(
-                    username = username,
-                    address = address,
-                )
-                Utils_ret.api.loginUser(user)
-            } catch (e: IOException) {
-                Log.e("UserViewModel", "Network error occurred during login.", e)
-                login_result.value = "Network error occurred."
-                return@launch
-            } catch (e: HttpException) {
-                Log.e("UserViewModel", "HTTP error occurred during login: ${e.code()}", e)
-                login_result.value = "HTTP error occurred: ${e.code()}"
-                return@launch
-            }
-
-            if (response.isSuccessful && response.body() != null) {
-                Log.d("UserViewModel", "Login successful.")
-                registrationResult.value = "Login successful."
-
-            } else {
-                Log.e("UserViewModel", "Login failed: ${response.errorBody()}")
-            }
-        }
-    }
+//    fun sendLogin(username: String, address: String) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val response = try {
+//                val user = login_model(
+//                    username = username,
+//                    address = address,
+//                )
+//                Utils_ret.api.loginUser(user)
+//            } catch (e: IOException) {
+//                Log.e("UserViewModel", "Network error occurred during login.", e)
+//                login_result.value = "Network error occurred."
+//                return@launch
+//            } catch (e: HttpException) {
+//                Log.e("UserViewModel", "HTTP error occurred during login: ${e.code()}", e)
+//                login_result.value = "HTTP error occurred: ${e.code()}"
+//                return@launch
+//            }
+//
+//            if (response.isSuccessful && response.body() != null) {
+//                Log.d("UserViewModel", "Login successful.")
+//                registrationResult.value = "Login successful."
+//
+//            } else {
+//                Log.e("UserViewModel", "Login failed: ${response.errorBody()}")
+//            }
+//        }
+//    }
 
     fun getAllProducts() {
         viewModelScope.launch(Dispatchers.IO) {

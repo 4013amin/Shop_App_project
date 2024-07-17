@@ -32,6 +32,10 @@ fun ScreenRegister(
 
     var username by remember { mutableStateOf(savedCredentials.first) }
     var password by remember { mutableStateOf(savedCredentials.second) }
+    var phone by remember { mutableStateOf("") }
+    var city by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    var postalCode by remember { mutableStateOf("") }
 
     var registrationMessage by remember { mutableStateOf("") }
 
@@ -58,9 +62,32 @@ fun ScreenRegister(
             visualTransformation = PasswordVisualTransformation()
         )
 
+        TextField(
+            value = phone,
+            onValueChange = { phone = it },
+            label = { Text("Phone Number") }
+        )
+
+        TextField(
+            value = city,
+            onValueChange = { city = it },
+            label = { Text("City") }
+        )
+
+        TextField(
+            value = address,
+            onValueChange = { address = it },
+            label = { Text("Address") }
+        )
+
+        TextField(
+            value = postalCode,
+            onValueChange = { postalCode = it },
+            label = { Text("Postal Code") }
+        )
+
         Button(onClick = {
-            userViewModel.sendRegister(username = username, address = password)
-            userViewModel.saveCredentials(username, password)
+            userViewModel.sendRegister(username, password, phone, city, address, postalCode)
             navController.navigate("Screen_login")
         }) {
             Text(text = "Submit")
