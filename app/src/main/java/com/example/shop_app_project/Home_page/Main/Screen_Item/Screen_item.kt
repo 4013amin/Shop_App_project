@@ -41,6 +41,7 @@ import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
 
 var gson = Gson()
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchPage(
