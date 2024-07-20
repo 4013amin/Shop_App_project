@@ -1,5 +1,6 @@
 package com.example.shop_app_project.Home_page.Main
 
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -8,6 +9,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -36,9 +38,22 @@ import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ShoppingCart
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
+import androidx.compose.material3.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.shop_app_project.R
 
 val gson = Gson()
 
@@ -60,247 +75,215 @@ class MainActivity : ComponentActivity() {
 
 data class CategoryModel(
     val name: String,
+    val imageRes: Int,
+)
+
+data class ProductModel(
+    val name: String,
+    val description: String,
+    val price: Int,
     val image: String,
 )
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UiHomePage(
     userViewModel: UserViewModel = viewModel(),
     cartViewModel: ShoppingCartViewModel,
     navController: NavController,
 ) {
-    val products by userViewModel.products
-    val categories by userViewModel.category
+    val categories = listOf(
+        CategoryModel("Cat", R.drawable.cat),
+        CategoryModel("Dog", R.drawable.dog),
+        CategoryModel("Test", R.drawable.logo),
+        // add more categories as needed
+    )
 
-    LaunchedEffect(Unit) {
-        userViewModel.getAllProducts()
-    }
+    val products = listOf(
+        ProductModel("Product 1", "Description 1", 100, "https://via.placeholder.com/150"),
+        ProductModel("Product 2", "Description 2", 200, "https://via.placeholder.com/150"),
+        ProductModel("Product 3", "Description 3", 300, "https://via.placeholder.com/150"),
+        // add more products as needed
+    )
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-//        item {
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 16.dp),
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Text(
-//                    text = "Location",
-//                    fontSize = 14.sp,
-//                    color = Color.Black
-//                )
-//                Text(
-//                    text = "New York, USA",
-//                    fontSize = 14.sp,
-//                    color = Color.Black
-//                )
-//            }
-//        }
-
-        item {
-            Text(
-                text = "#SpecialForYou",
-                fontSize = 18.sp,
-                color = Color.Black,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-
-        if (products.isEmpty()) {
-            item {
-                Log.d("UiHomePage", "No products available.")
-            }
-        } else {
-            val cyclicProducts = products.cycle()
-            item {
-                val pagerState = rememberPagerState(pageCount = { cyclicProducts.size / 2 })
-
-                LaunchedEffect(Unit) {
-                    while (true) {
-                        pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount)
-                        delay(3000)
+    Scaffold(
+        modifier = Modifier.background(color = Color.White),
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Pet Store") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        // Handle menu click
+                    }) {
+                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
                     }
-                }
-
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .height(300.dp)
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 0.dp)
-                ) { page ->
-                    val start = page * 3
-                    val end = (start + 3).coerceAtMost(cyclicProducts.size)
-                    val productsInPage = cyclicProducts.subList(start, end)
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        productsInPage.forEach { product ->
-                            ProductItem(
-                                name = product.name,
-                                description = product.description,
-                                price = product.price,
-                                image = product.image,
-                                addToCart = {
-                                    cartViewModel.addToCart(product)
-                                },
-                                onClick = {
-                                    val productGson = gson.toJson(product)
-                                    navController.navigate("single_product?product=${productGson}")
+                },
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate("cart")
+                    }) {
+                        BadgedBox(badge = {
+                            val cartItems by cartViewModel.cartItems.collectAsState()
+                            if (cartItems.isNotEmpty()) {
+                                Badge {
+                                    Text(text = cartItems.size.toString())
                                 }
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Cart"
                             )
                         }
                     }
                 }
+            )
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(innerPadding)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            item {
+                Text(
+                    text = "Shop",
+                    fontSize = 30.sp,
+                    color = Color(0xFF047D09),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
 
             item {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(18.dp))
             }
 
+            // Categories
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-//                    Text(
-//                        text = "بیشتر",
-//                        fontSize = 14.sp,
-//                        color = Color.Red,
-//                        modifier = Modifier.clickable { /* TODO: See All action */ }
-//                    )
-                    Text(
-                        text = "دسته بندی ها",
-                        fontSize = 18.sp,
-                        color = Color.Black
-                    )
-                }
-            }
-
-            item {
-                val pagerState =
-                    rememberPagerState(pageCount = { categories.size / categories.size })
-
-                LaunchedEffect(Unit) {
-                    while (true) {
-                        pagerState.animateScrollToPage((pagerState.currentPage + 1) % pagerState.pageCount)
-                        delay(100)
-                    }
-                }
-
                 HorizontalPager(
-                    state = pagerState,
+                    state = rememberPagerState(pageCount = { categories.size }),
                     modifier = Modifier
                         .height(120.dp)
                         .fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) { page ->
-                    val start = page * 10
-                    val end = (start + 10).coerceAtMost(categories.size)
-                    val categoriesInPage = categories.subList(start, end)
-
                     LazyRow(
                         modifier = Modifier.padding(vertical = 8.dp)
                     ) {
-                        items(categoriesInPage) { category ->
-                            CategoryItem(image = category.image, name = category.name)
+                        items(categories) { category ->
+                            CategoryItem(imageRes = category.imageRes, name = category.name)
                         }
                     }
                 }
             }
 
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "بیشتر",
-                        fontSize = 14.sp,
-                        color = Color.Red,
-                        modifier = Modifier.clickable {
-                            navController.navigate("search")
-                        }
-                    )
-                    Text(
-                        text = "محصولات ویژه",
-                        fontSize = 18.sp,
-                        color = Color.Black
-                    )
-                }
-            }
 
-            item {
-                LazyRow(
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    val productJson = Gson().toJson(products)
-                    items(products) { product ->
-                        ProductItem(
-                            name = product.name,
-                            description = product.description,
-                            price = product.price,
-                            image = product.image,
-                            addToCart = {
-                                cartViewModel.addToCart(product)
-                            },
-                            onClick = {
-                                val productJson = gson.toJson(product)
-                                navController.navigate("single_product?product=$productJson")
-                            }
-                        )
-                    }
-                }
-            }
+//            item {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(vertical = 8.dp),
+//                    horizontalArrangement = Arrangement.SpaceBetween,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Text(
+//                        text = "بیشتر",
+//                        fontSize = 14.sp,
+//                        color = Color.Red,
+//                        modifier = Modifier.clickable {
+//                            navController.navigate("search")
+//                        }
+//                    )
+//                    Text(
+//                        text = "محصولات ویژه",
+//                        fontSize = 18.sp,
+//                        color = Color.Black
+//                    )
+//                }
+//            }
+//
+//            item {
+//                LazyRow(
+//                    modifier = Modifier.padding(vertical = 8.dp)
+//                ) {
+//                    items(products) { product ->
+//                        ProductItem(
+//                            name = product.name,
+//                            description = product.description,
+//                            price = product.price,
+//                            image = product.image,
+//                            addToCart = {
+////                                cartViewModel.addToCart(product)
+//                            },
+//                            onClick = {
+//                                val productJson = gson.toJson(product)
+//                                navController.navigate("single_product?product=$productJson")
+//                            }
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
         }
     }
 }
 
-fun <T> List<T>.cycle(): List<T> {
-    return this + this
-}
 
 @Composable
-fun CategoryItem(image: String, name: String) {
-    Column(
+fun CategoryItem(imageRes: Int, name: String) {
+    val isPressed = remember { mutableStateOf(false) }
+    val backgroundColor =
+        if (isPressed.value) Color.Green else Color(0xFFA5D6A7)
+
+    Box(
         modifier = Modifier
             .padding(8.dp)
-            .width(100.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .width(150.dp)
+            .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
+            .height(100.dp)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = {
+                        isPressed.value = true
+                    },
+                    onPress = {
+                        tryAwaitRelease()
+                        isPressed.value = false
+                    }
+                )
+            }
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = image),
-            contentDescription = null,
+        Column(
             modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(50))
-                .background(Color.LightGray),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = name,
-            fontSize = 16.sp,
-            color = Color.Black,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+                .fillMaxSize()
+                .padding(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(4.dp)),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = name,
+                fontSize = 16.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
@@ -347,3 +330,4 @@ fun ProductItem(
         }
     }
 }
+
