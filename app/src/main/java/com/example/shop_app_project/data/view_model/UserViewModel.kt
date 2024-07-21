@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shop_app_project.data.models.product.Category
 import com.example.shop_app_project.data.models.product.PorductModel
@@ -163,10 +162,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         return Pair(username, password)
     }
 
-    // تابع برای اضافه کردن به سبد خرید
-    fun addToCart(product: PorductModel) {
-        shoppingCartViewModel.addToCart(product)
-    }
+//    // تابع برای اضافه کردن به سبد خرید
+//    fun addToCart(product: PorductModel) {
+//        shoppingCartViewModel.addToCart(product)
+//    }
 
     // تابع برای حذف از سبد خرید
     fun removeFromCart(product: PorductModel) {

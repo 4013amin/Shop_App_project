@@ -5,7 +5,6 @@ import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -95,7 +94,7 @@ fun SearchPage(
                     price = product.price,
                     image = product.image,
                     addToCart = {
-                        shoppingCartViewModel.addToCart(product)
+//                        shoppingCartViewModel.addToCart(product)
                     },
                     onClick = {
                         val productGson = gson.toJson(product)
@@ -224,9 +223,9 @@ fun ProductDetailsPage(
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "\$${it.price}", fontSize = 20.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { cartViewModel.addToCart(it) }) {
-                Text(text = "Add to Cart")
-            }
+//            Button(onClick = { cartViewModel.addToCart(it) }) {
+//                Text(text = "Add to Cart")
+//            }
         }
     } ?: run {
         Text(text = "Product not found", fontSize = 16.sp, color = Color.Red)

@@ -1,11 +1,8 @@
 package com.example.shop_app_project.Home_page.Main
 
-import android.graphics.drawable.Icon
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +16,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,18 +37,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ShoppingCart
-import com.example.shop_app_project.data.models.product.PorductModel
 import com.google.gson.Gson
-import kotlinx.coroutines.delay
 import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.shop_app_project.R
 
 val gson = Gson()
@@ -66,8 +58,13 @@ class MainActivity : ComponentActivity() {
                 val userViewModel: UserViewModel = viewModel()
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
+                UiHomePage(
+                    userViewModel = userViewModel,
+                    cartViewModel = shoppingCartViewModel,
+                    navController = navController
+                )
 
-                BottomNavigations(navController, userViewModel, shoppingCartViewModel)
+//                BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }
     }
@@ -100,14 +97,21 @@ fun UiHomePage(
     )
 
     val products = listOf(
-        ProductModel("Product 1", "Description 1", 100, "https://via.placeholder.com/150"),
-        ProductModel("Product 2", "Description 2", 200, "https://via.placeholder.com/150"),
-        ProductModel("Product 3", "Description 3", 300, "https://via.placeholder.com/150"),
-        // add more products as needed
+        ProductModel("Dog Food", "High-quality dog food", 50, "https://via.placeholder.com/150"),
+        ProductModel("Cat Toy", "Fun toy for cats", 20, "https://via.placeholder.com/150"),
+        ProductModel("Bird Cage", "Spacious bird cage", 150, "https://via.placeholder.com/150"),
+        ProductModel("Fish Tank", "Large fish tank", 100, "https://via.placeholder.com/150"),
+        ProductModel(
+            "Rabbit Hutch",
+            "Comfortable hutch for rabbits",
+            120,
+            "https://via.placeholder.com/150"
+        )
     )
 
     Scaffold(
-        modifier = Modifier.background(color = Color.White),
+        modifier = Modifier.background(color = Color.White)
+            .padding(0.dp),
         topBar = {
             TopAppBar(
                 title = { Text(text = "Pet Store") },
@@ -164,47 +168,54 @@ fun UiHomePage(
 
             // Categories
             item {
-                HorizontalPager(
-                    state = rememberPagerState(pageCount = { categories.size }),
+                LazyRow(
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    items(categories) { category ->
+                        CategoryItem(imageRes = category.imageRes, name = category.name)
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(18.dp))
+            }
+
+            // Products
+            item {
+                LazyRow(
                     modifier = Modifier
-                        .height(120.dp)
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) { page ->
-                    LazyRow(
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    ) {
-                        items(categories) { category ->
-                            CategoryItem(imageRes = category.imageRes, name = category.name)
-                        }
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    items(products) { product ->
+                        ProductItem(
+                            name = product.name,
+                            description = product.description,
+                            price = product.price,
+                            image = product.image,
+                            addToCart = {
+                            },
+                            onClick = {
+                                val productJson = gson.toJson(product)
+                                navController.navigate("single_product?product=$productJson")
+                            }
+                        )
                     }
                 }
             }
 
 
-//            item {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(vertical = 8.dp),
-//                    horizontalArrangement = Arrangement.SpaceBetween,
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(
-//                        text = "بیشتر",
-//                        fontSize = 14.sp,
-//                        color = Color.Red,
-//                        modifier = Modifier.clickable {
-//                            navController.navigate("search")
-//                        }
-//                    )
-//                    Text(
-//                        text = "محصولات ویژه",
-//                        fontSize = 18.sp,
-//                        color = Color.Black
-//                    )
-//                }
-//            }
+
+
+
+
+
+
+
+
+
+//
 //
 //            item {
 //                LazyRow(
@@ -300,7 +311,7 @@ fun ProductItem(
         modifier = Modifier
             .width(180.dp)
             .padding(8.dp)
-            .background(Color.White)
+            .background(Color(0xFFE8F5E9), RoundedCornerShape(8.dp))
             .padding(8.dp)
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -311,22 +322,34 @@ fun ProductItem(
             modifier = Modifier
                 .height(120.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(26.dp)),
+                .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = name, fontSize = 14.sp, color = Color.Black)
+        Text(text = name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1B5E20))
         Text(
             text = description,
-            fontSize = 10.sp,
+            fontSize = 12.sp,
             color = Color.Gray,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Text(text = "$$price", fontSize = 12.sp, color = Color.Black)
+        Text(
+            text = "$$price",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF388E3C)
+        )
         Spacer(modifier = Modifier.height(4.dp))
-        Button(onClick = addToCart) {
-            Text(text = "Add to Cart", fontSize = 12.sp)
+        IconButton(
+            onClick = addToCart,
+
+            ) {
+            Icon(
+                imageVector = Icons.Default.ShoppingCart, contentDescription = "", tint = Color(
+                    0xDF008A06
+                )
+            )
         }
     }
 }
