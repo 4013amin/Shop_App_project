@@ -263,11 +263,44 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
+
+                //DogProduct
+                item {
+                    Text(
+                        text = "Dog",
+                        fontSize = 30.sp,
+                        color = Color(0xFF047D09),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
+                item {
+                    LazyRow(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        items(products) { product ->
+                            ProductItem(
+                                name = product.name,
+                                description = product.description,
+                                price = product.price,
+                                image = product.image,
+                                addToCart = { /*TODO*/ }) {
+
+                            }
+
+                        }
+
+
+                    }
+                }
+
+
             }
         }
-
-
-
     }
 
 
