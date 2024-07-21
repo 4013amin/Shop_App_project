@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -26,10 +27,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.shop_app_project.Home_page.Main.UiHomePage
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
-
 
 data class NavigationsItem(
     val route: String,
@@ -38,8 +39,8 @@ data class NavigationsItem(
 )
 
 val navItems = listOf(
-    NavigationsItem("home", "Home", Icons.Default.Home),
-    NavigationsItem("search", "Search", Icons.Default.Search),
+    NavigationsItem("home", "Shop", Icons.Default.Shop),
+    NavigationsItem("search", "Explore", Icons.Default.Search),
     NavigationsItem("cart", "Cart", Icons.Default.ShoppingCart),
     NavigationsItem("profile", "Profile", Icons.Default.Person)
 )
@@ -97,18 +98,14 @@ fun BottomNavigations(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") {
-//                UiHomePage(
-//                    userViewModel = userViewModel,
-//                    cartViewModel = shoppingCartViewModel,
-//                    navController = navController
-//                )
+                UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
             }
             composable("search") {
-//                SearchPage(
-//                    userViewModel = userViewModel,
-//                    shoppingCartViewModel = shoppingCartViewModel,
-//                    navController = navController
-//                )
+                SearchPage(
+                    userViewModel = userViewModel,
+                    shoppingCartViewModel = shoppingCartViewModel,
+                    navController = navController
+                )
             }
             composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
             composable("profile") { ProfilePage() }
