@@ -28,84 +28,83 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
-import com.example.shop_app_project.Home_page.Main.ProductItem
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
 
-var gson = Gson()
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchPage(
-    userViewModel: UserViewModel = viewModel(),
-    shoppingCartViewModel: ShoppingCartViewModel = viewModel(),
-    navController: NavController,
-) {
-    var searchText by remember { mutableStateOf(TextFieldValue("")) }
-
-    LaunchedEffect(Unit) {
-        userViewModel.getAllProducts()
-    }
-
-    val products by userViewModel.products
-
-    //search_filter
-    var search_filter = products.filter { product ->
-        product.name.contains(searchText.text, ignoreCase = true)
-    }
-
-    Log.d("SearchPage", "Number of products: ${products.size}")
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .border(1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp)),
-            placeholder = {
-                Text(
-                    "Search here...",
-                    style = MaterialTheme.typography.labelMedium.copy(color = Color.Black)
-                )
-            },
-            colors = TextFieldDefaults.textFieldColors(Color.Black),
-            textStyle = MaterialTheme.typography.bodyLarge
-        )
-
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            contentPadding = PaddingValues(10.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp)
-        ) {
-            items(search_filter) { product ->
-                ProductItem(
-                    name = product.name,
-                    description = product.description,
-                    price = product.price,
-                    image = product.image,
-                    addToCart = {
-//                        shoppingCartViewModel.addToCart(product)
-                    },
-                    onClick = {
-                        val productGson = gson.toJson(product)
-                        navController.navigate("single_product?product=${productGson}")
-                    }
-                )
-
-            }
-        }
-    }
-}
+//var gson = Gson()
+//
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun SearchPage(
+//    userViewModel: UserViewModel = viewModel(),
+//    shoppingCartViewModel: ShoppingCartViewModel = viewModel(),
+//    navController: NavController,
+//) {
+//    var searchText by remember { mutableStateOf(TextFieldValue("")) }
+//
+//    LaunchedEffect(Unit) {
+//        userViewModel.getAllProducts()
+//    }
+//
+//    val products by userViewModel.products
+//
+//    //search_filter
+//    var search_filter = products.filter { product ->
+//        product.name.contains(searchText.text, ignoreCase = true)
+//    }
+//
+//    Log.d("SearchPage", "Number of products: ${products.size}")
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color.White)
+//            .padding(16.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        TextField(
+//            value = searchText,
+//            onValueChange = { searchText = it },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp)
+//                .border(1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp)),
+//            placeholder = {
+//                Text(
+//                    "Search here...",
+//                    style = MaterialTheme.typography.labelMedium.copy(color = Color.Black)
+//                )
+//            },
+//            colors = TextFieldDefaults.textFieldColors(Color.Black),
+//            textStyle = MaterialTheme.typography.bodyLarge
+//        )
+//
+//        LazyVerticalStaggeredGrid(
+//            columns = StaggeredGridCells.Fixed(2),
+//            contentPadding = PaddingValues(10.dp),
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(15.dp)
+//        ) {
+//            items(search_filter) { product ->
+//                ProductItem(
+//                    name = product.name,
+//                    description = product.description,
+//                    price = product.price,
+//                    image = product.image,
+//                    addToCart = {
+////                        shoppingCartViewModel.addToCart(product)
+//                    },
+//                    onClick = {
+//                        val productGson = gson.toJson(product)
+//                        navController.navigate("single_product?product=${productGson}")
+//                    }
+//                )
+//
+//            }
+//        }
+//    }
+//}
 
 
 @Composable

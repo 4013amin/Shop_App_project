@@ -3,7 +3,6 @@ package com.example.shop_app_project.data.view_model
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shop_app_project.Home_page.Main.ProductModel
 import com.example.shop_app_project.Home_page.Main.SharedPreferencesManager.SharedPreferencesManager
 import com.example.shop_app_project.data.models.product.PorductModel
 import kotlinx.coroutines.flow.MutableStateFlow

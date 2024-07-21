@@ -26,7 +26,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.example.shop_app_project.Home_page.Main.UiHomePage
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
@@ -98,18 +97,18 @@ fun BottomNavigations(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") {
-                UiHomePage(
-                    userViewModel = userViewModel,
-                    cartViewModel = shoppingCartViewModel,
-                    navController = navController
-                )
+//                UiHomePage(
+//                    userViewModel = userViewModel,
+//                    cartViewModel = shoppingCartViewModel,
+//                    navController = navController
+//                )
             }
             composable("search") {
-                SearchPage(
-                    userViewModel = userViewModel,
-                    shoppingCartViewModel = shoppingCartViewModel,
-                    navController = navController
-                )
+//                SearchPage(
+//                    userViewModel = userViewModel,
+//                    shoppingCartViewModel = shoppingCartViewModel,
+//                    navController = navController
+//                )
             }
             composable("cart") { CartPage(cartViewModel = shoppingCartViewModel) }
             composable("profile") { ProfilePage() }
