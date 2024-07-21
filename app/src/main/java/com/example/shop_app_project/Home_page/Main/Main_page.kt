@@ -30,7 +30,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.shop_app_project.Home_page.Main.Screen_Item.BottomNavigations
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
@@ -67,7 +66,9 @@ class MainActivity : ComponentActivity() {
                 val userViewModel: UserViewModel = viewModel()
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
-                BottomNavigations(navController, userViewModel, shoppingCartViewModel)
+                UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
+
+                //                BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }
     }
@@ -82,7 +83,7 @@ data class ProductModel(
     val name: String,
     val description: String,
     val price: Int,
-    val image: String,
+    val image: Int,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,22 +101,13 @@ fun UiHomePage(
     )
 
     val products = listOf(
-        ProductModel(
-            "Dog Food",
-            "High-quality dog food",
-            50,
-            "https://via.placeholder.com/150"
-        ),
-        ProductModel("Cat Toy", "Fun toy for cats", 20, "https://via.placeholder.com/150"),
-        ProductModel("Bird Cage", "Spacious bird cage", 150, "https://via.placeholder.com/150"),
-        ProductModel("Fish Tank", "Large fish tank", 100, "https://via.placeholder.com/150"),
-        ProductModel(
-            "Rabbit Hutch",
-            "Comfortable hutch for rabbits",
-            120,
-            "https://via.placeholder.com/150"
-        )
+        ProductModel("Dog Food", "High-quality dog food", 50, R.drawable.tools),
+        ProductModel("Cat Toy", "Fun toy for cats", 20, R.drawable.cat_image),
+        ProductModel("Bird Cage", "Spacious bird cage", 150, R.drawable.tools),
+        ProductModel("Fish Tank", "Large fish tank", 100, R.drawable.cat_image),
+        ProductModel("Rabbit Hutch", "Comfortable hutch for rabbits", 120, R.drawable.tools)
     )
+
 
     Scaffold(
         modifier = Modifier
@@ -161,9 +153,24 @@ fun UiHomePage(
                 .padding(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
+
+            // Image Slider
+            item {
+                ImageSlider(
+                    images = listOf(
+                        R.drawable.image_slider
+                    )
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(25.dp))
+            }
+
+
             item {
                 Text(
-                    text = "Shop",
+                    text = "Trending now",
                     fontSize = 30.sp,
                     color = Color(0xFF047D09),
                     fontWeight = FontWeight.Bold,
@@ -171,26 +178,7 @@ fun UiHomePage(
                 )
             }
 
-            item {
-                Spacer(modifier = Modifier.height(18.dp))
-            }
-
-            // Categories
-            item {
-                LazyRow(
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    items(categories) { category ->
-                        CategoryItem(imageRes = category.imageRes, name = category.name)
-                    }
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(18.dp))
-            }
-
-            // Products
+            // TrendProduct
             item {
                 LazyRow(
                     modifier = Modifier
@@ -214,19 +202,21 @@ fun UiHomePage(
                 }
             }
 
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-            }
 
             //CatProduct
             item {
                 Text(
-                    text = "Cat",
+                    text = "Browse pet types",
                     fontSize = 30.sp,
                     color = Color(0xFF047D09),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
+            }
+
+            // Animal Boxes
+            item {
+                AnimalBoxes()
             }
 
             item {
@@ -256,6 +246,29 @@ fun UiHomePage(
                     }
                 }
             }
+
+
+            // Categories
+            item {
+                LazyRow(
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    items(categories) { category ->
+                        CategoryItem(imageRes = category.imageRes, name = category.name)
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(18.dp))
+            }
+
+
+
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
 
             //DogProduct
             item {
@@ -285,6 +298,34 @@ fun UiHomePage(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ImageSlider(images: List<Int>) {
+    LazyRow(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .height(200.dp) // ارتفاع مستطیل‌ها
+    ) {
+        items(images) { imageRes ->
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxHeight() // به جای fillMaxSize از fillMaxHeight استفاده کنید
+            ) {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxHeight() // به جای fillMaxSize از fillMaxHeight استفاده کنید
+                        .aspectRatio(16f / 9f) // حفظ نسبت تصویر
+                        .padding(horizontal = 8.dp)
+                )
             }
         }
     }
@@ -376,7 +417,7 @@ fun ProductItem(
     name: String,
     description: String,
     price: Int,
-    image: String,
+    image: Int, // استفاده از Int برای منابع محلی
     addToCart: () -> Unit,
     onClick: () -> Unit,
 ) {
@@ -384,16 +425,16 @@ fun ProductItem(
         modifier = Modifier
             .width(180.dp)
             .padding(8.dp)
-            .background(Color(0xFFE8F5E9), RoundedCornerShape(8.dp))
+            .background(Color.White, RoundedCornerShape(8.dp))
             .padding(8.dp)
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = rememberAsyncImagePainter(image),
+            painter = painterResource(id = image),
             contentDescription = null,
             modifier = Modifier
-                .height(120.dp)
+                .height(200.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop
@@ -403,12 +444,12 @@ fun ProductItem(
             text = name,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1B5E20)
+            color = Color.Black
         )
         Text(
             text = description,
             fontSize = 12.sp,
-            color = Color.Gray,
+            color = Color.Black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -421,14 +462,59 @@ fun ProductItem(
         Spacer(modifier = Modifier.height(4.dp))
         IconButton(
             onClick = addToCart,
-
-            ) {
+        ) {
             Icon(
-                imageVector = Icons.Default.ShoppingCart, contentDescription = "", tint = Color(
-                    0xDF008A06
-                )
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = "",
+                tint = Color.Black
             )
         }
+    }
+}
+
+
+@Composable
+fun AnimalBox(imageRes: Int, backgroundColor: Color, text: String) {
+    Box(
+        modifier = Modifier
+            .size(width = 150.dp, height = 100.dp)
+            .background(color = backgroundColor, shape = RoundedCornerShape(16.dp))
+            .padding(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = text,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(64.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = text,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+
+//AnimalsBox
+
+@Composable
+fun AnimalBoxes() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        AnimalBox(imageRes = R.drawable.dog, backgroundColor = Color(0xFFFFF3E0), text = "Dog")
+        AnimalBox(imageRes = R.drawable.cat, backgroundColor = Color(0xFFE0F7FA), text = "Cat")
     }
 }
 

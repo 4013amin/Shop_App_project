@@ -88,19 +88,19 @@ fun SearchPage(
                 .padding(15.dp)
         ) {
             items(search_filter) { product ->
-                ProductItem(
-                    name = product.name,
-                    description = product.description,
-                    price = product.price,
-                    image = product.image,
-                    addToCart = {
-//                        shoppingCartViewModel.addToCart(product)
-                    },
-                    onClick = {
-                        val productGson = gson.toJson(product)
-                        navController.navigate("single_product?product=${productGson}")
-                    }
-                )
+//                ProductItem(
+//                    name = product.name,
+//                    description = product.description,
+//                    price = product.price,
+//                    image = product.image,
+//                    addToCart = {
+////                        shoppingCartViewModel.addToCart(product)
+//                    },
+//                    onClick = {
+//                        val productGson = gson.toJson(product)
+//                        navController.navigate("single_product?product=${productGson}")
+//                    }
+//                )
 
             }
         }
