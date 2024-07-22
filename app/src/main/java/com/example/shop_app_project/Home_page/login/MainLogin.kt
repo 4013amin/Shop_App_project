@@ -1,5 +1,6 @@
 package com.example.shop_app_project.Home_page.login
 
+import ScreenRegister
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -86,7 +87,7 @@ fun bottomnavigations(navController: NavController) {
             startDestination = "ScreenRegister",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("ScreenRegister") { ScreenRegister(navController) }
+            composable("ScreenRegister") { ScreenRegister(navController = navController) }
             composable("ScreenLogin") { ScreenLogin(navController) }
         }
     }

@@ -68,6 +68,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.29.1-alpha")
     implementation("androidx.compose.ui:ui-android:1.6.8")
     implementation("androidx.compose.foundation:foundation:1.7.0-beta04")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
     testImplementation("junit:junit:4.13.2")
 
     //lottie
