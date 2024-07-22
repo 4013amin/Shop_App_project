@@ -113,7 +113,6 @@ fun SearchPage(
     }
 }
 
-
 @Composable
 fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
     val cartItems by cartViewModel.cartItems.collectAsState()
@@ -125,14 +124,24 @@ fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Cart Page", fontSize = 32.sp)
+        Text(
+            text = "Cart Page",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF388E3C)
+        )
 
+        // نمایش لیست محصولات در سبد خرید
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(cartItems) { product ->
-                CartItem(product = product, onRemove = { cartViewModel.removeFromCart(product) })
+                CartItem(
+                    product = product,
+                    onRemove = { cartViewModel.removeFromCart(product) }
+                )
             }
         }
 
+        // دکمه برای خالی کردن سبد خرید
         Button(
             onClick = { cartViewModel.clearCart() },
             modifier = Modifier.padding(top = 16.dp)
@@ -143,7 +152,7 @@ fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
 }
 
 @Composable
-fun CartItem(product: PorductModel, onRemove: () -> Unit) {
+fun CartItem(product: com.example.shop_app_project.Home_page.Main.ProductModel, onRemove: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -166,14 +175,14 @@ fun CartItem(product: PorductModel, onRemove: () -> Unit) {
 
         Column(
             modifier = Modifier
-                .size(105.dp)
+                .weight(1f)
         ) {
-            Text(text = product.name, fontSize = 20.sp)
+            Text(text = product.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(text = product.description, fontSize = 14.sp, color = Color.Gray, maxLines = 1)
             Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.width(16.dp))
 
         Button(onClick = onRemove) {
             Text(text = "Remove")

@@ -1,6 +1,5 @@
 package com.example.shop_app_project.Home_page.Main
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,50 +11,37 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
+import com.example.shop_app_project.Home_page.Main.Screen_Item.BottomNavigations
+import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.ShoppingCart
 import com.google.gson.Gson
-import androidx.compose.material3.*
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import coil.compose.rememberImagePainter
-import com.example.shop_app_project.Home_page.Main.Screen_Item.SetupNavGraph
-import com.example.shop_app_project.R
-import com.google.accompanist.pager.ExperimentalPagerApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 
 val gson = Gson()
 
@@ -69,15 +55,15 @@ class MainActivity : ComponentActivity() {
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
 
-                SetupNavGraph(
-                    navController = navController,
-                    userViewModel = userViewModel,
-                    shoppingCartViewModel = shoppingCartViewModel
-                )
+//                SetupNavGraph(
+//                    navController = navController,
+//                    userViewModel = userViewModel,
+//                    shoppingCartViewModel = shoppingCartViewModel
+//                )
 
                 UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
 
-                //                BottomNavigations(navController, userViewModel, shoppingCartViewModel)
+                BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }
     }
@@ -102,6 +88,10 @@ fun UiHomePage(
     cartViewModel: ShoppingCartViewModel,
     navController: NavController,
 ) {
+
+    val cartItems by cartViewModel.cartItems.collectAsState()
+
+
     val categories = listOf(
         CategoryModel("Cat", R.drawable.cat),
         CategoryModel("Dog", R.drawable.dog),
@@ -139,7 +129,11 @@ fun UiHomePage(
                         BadgedBox(badge = {
                             val cartItems by cartViewModel.cartItems.collectAsState()
                             if (cartItems.isNotEmpty()) {
-                                Badge {
+                                Badge(
+                                    containerColor = Color.Transparent,
+                                    contentColor = Color(0xFF0ED918),
+                                    modifier = Modifier.size(16.dp)
+                                ) {
                                     Text(text = cartItems.size.toString())
                                 }
                             }
@@ -201,10 +195,11 @@ fun UiHomePage(
                             price = product.price,
                             image = product.image,
                             addToCart = {
+                                cartViewModel.addToCart(product)
                             },
                             onClick = {
 
-                                navController.navigate("singleProduct")
+                                navController.navigate("singlePage")
                             }
                         )
                     }
@@ -481,7 +476,7 @@ fun ProductItem(
     }
 }
 
-
+//AnimalsBox
 @Composable
 fun AnimalBox(imageRes: Int, backgroundColor: Color, text: String) {
     Box(
@@ -511,19 +506,40 @@ fun AnimalBox(imageRes: Int, backgroundColor: Color, text: String) {
     }
 }
 
-
-//AnimalsBox
-
 @Composable
 fun AnimalBoxes() {
-    Row(
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        AnimalBox(imageRes = R.drawable.dog, backgroundColor = Color(0xFFFFF3E0), text = "Dog")
-        AnimalBox(imageRes = R.drawable.cat, backgroundColor = Color(0xFFE0F7FA), text = "Cat")
+        item {
+            AnimalBox(imageRes = R.drawable.dog, backgroundColor = Color(0xFFFFF3E0), text = "Dog")
+        }
+        item {
+            AnimalBox(imageRes = R.drawable.cat, backgroundColor = Color(0xFFE0F7FA), text = "Cat")
+        }
+        item {
+            AnimalBox(
+                imageRes = R.drawable.parrot,
+                backgroundColor = Color(0xFFFFF3E0),
+                text = "parrot"
+            )
+        }
+        item {
+            AnimalBox(
+                imageRes = R.drawable.tools3,
+                backgroundColor = Color(0xFFE0F7FA),
+                text = "Tools"
+            )
+        }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun Animals() {
+    AnimalBoxes()
 }
     

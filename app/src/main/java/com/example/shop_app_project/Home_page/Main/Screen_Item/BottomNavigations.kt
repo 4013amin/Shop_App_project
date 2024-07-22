@@ -1,9 +1,18 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item//package com.example.shop_app_project.Home_page.Main.Screen_Item
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,13 +38,13 @@ data class NavigationsItem(
     val title: String,
     val icon: ImageVector,
 )
-//
-//val navItems = listOf(
-//    NavigationsItem("home", "Shop", Icons.Default.Shop),
-//    NavigationsItem("search", "Explore", Icons.Default.Search),
-//    NavigationsItem("cart", "Cart", Icons.Default.ShoppingCart),
-//    NavigationsItem("profile", "Profile", Icons.Default.Person)
-//)
+
+val navItems = listOf(
+    NavigationsItem("home", "Shop", Icons.Default.ShoppingCart),
+    NavigationsItem("search", "Explore", Icons.Default.Search),
+    NavigationsItem("cart", "Cart", Icons.Default.ShoppingCart),
+    NavigationsItem("profile", "Profile", Icons.Default.Person)
+)
 
 var products = mutableStateOf<List<PorductModel>>(arrayListOf())
 
@@ -52,36 +61,42 @@ fun BottomNavigations(
                 val currentRoute = navBackStackEntry?.destination?.route
                 val cartItems by shoppingCartViewModel.cartItems.collectAsState()
 
-//                navItems.forEach { item ->
-//                    NavigationBarItem(
-//                        icon = {
-//                            if (item.route == "cart") {
-//                                BadgedBox(badge = {
-//                                    if (cartItems.isNotEmpty()) {
-//                                        Badge {
-//                                            Text(text = cartItems.size.toString())
-//                                        }
-//                                    }
-//                                }) {
-//                                    Icon(imageVector = item.icon, contentDescription = item.title)
-//                                }
-//                            } else {
-//                                Icon(imageVector = item.icon, contentDescription = item.title)
-//                            }
-//                        },
-//                        label = { Text(item.title) },
-//                        selected = currentRoute == item.route,
-//                        onClick = {
-//                            navController.navigate(item.route) {
-//                                popUpTo(navController.graph.startDestinationId) {
-//                                    saveState = true
-//                                }
-//                                launchSingleTop = true
-//                                restoreState = true
-//                            }
-//                        }
-//                    )
-//                }
+                navItems.forEach { item ->
+                    NavigationBarItem(
+                        icon = {
+                            if (item.route == "cart") {
+                                BadgedBox(badge = {
+                                    if (cartItems.isNotEmpty()) {
+                                        Badge {
+                                            Text(text = cartItems.size.toString())
+                                        }
+                                    }
+                                }) {
+                                    androidx.compose.material3.Icon(
+                                        imageVector = item.icon,
+                                        contentDescription = item.title
+                                    )
+                                }
+                            } else {
+                                androidx.compose.material3.Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title
+                                )
+                            }
+                        },
+                        label = { Text(item.title) },
+                        selected = currentRoute == item.route,
+                        onClick = {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -111,24 +126,4 @@ fun BottomNavigations(
     }
 }
 
-@Composable
-fun SetupNavGraph(
-    navController: NavHostController,
-    userViewModel: UserViewModel,
-    shoppingCartViewModel: ShoppingCartViewModel,
-) {
-    NavHost(
-        navController = navController,
-        startDestination = "home"
-    ) {
-        composable("home") {
-            UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
-        }
-        composable("singleProduct") {
-            ProductDetailsPage(navController)
-        }
-        composable("cart") {
-            CartPage(shoppingCartViewModel)
-        }
-    }
-}
+

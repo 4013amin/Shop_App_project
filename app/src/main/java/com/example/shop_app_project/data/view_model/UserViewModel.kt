@@ -168,12 +168,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 //    }
 
     // تابع برای حذف از سبد خرید
-    fun removeFromCart(product: PorductModel) {
+    fun removeFromCart(product: com.example.shop_app_project.Home_page.Main.ProductModel) {
         shoppingCartViewModel.removeFromCart(product)
     }
 
     // تابع برای دریافت لیست محصولات در سبد خرید
-    fun getCartItems(): List<PorductModel> {
+    fun getCartItems(): List<com.example.shop_app_project.Home_page.Main.ProductModel> {
         return shoppingCartViewModel.getCartItems()
     }
 
