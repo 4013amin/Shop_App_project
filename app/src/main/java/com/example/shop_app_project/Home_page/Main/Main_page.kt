@@ -1,5 +1,6 @@
 package com.example.shop_app_project.Home_page.Main
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -49,6 +50,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.rememberImagePainter
+import com.example.shop_app_project.Home_page.Main.Screen_Item.SetupNavGraph
 import com.example.shop_app_project.R
 import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.delay
@@ -65,6 +67,13 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val userViewModel: UserViewModel = viewModel()
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
+
+
+                SetupNavGraph(
+                    navController = navController,
+                    userViewModel = userViewModel,
+                    shoppingCartViewModel = shoppingCartViewModel
+                )
 
                 UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
 
@@ -194,8 +203,8 @@ fun UiHomePage(
                             addToCart = {
                             },
                             onClick = {
-                                val productJson = gson.toJson(product)
-                                navController.navigate("single_product?product=$productJson")
+
+                                navController.navigate("singleProduct")
                             }
                         )
                     }
@@ -240,7 +249,7 @@ fun UiHomePage(
                             },
                             onClick = {
                                 val productJson = gson.toJson(product)
-                                navController.navigate("single_product?product=$productJson")
+                                navController.navigate("ProductDetailsPage?product=$productJson")
                             }
                         )
                     }
@@ -517,4 +526,4 @@ fun AnimalBoxes() {
         AnimalBox(imageRes = R.drawable.cat, backgroundColor = Color(0xFFE0F7FA), text = "Cat")
     }
 }
-
+    

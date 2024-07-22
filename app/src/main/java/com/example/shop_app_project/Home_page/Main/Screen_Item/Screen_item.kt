@@ -14,6 +14,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,14 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
-import com.example.shop_app_project.Home_page.Main.ProductItem
+import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
 
@@ -192,42 +198,124 @@ fun ProfilePage() {
 @Composable
 fun ProductDetailsPage(
     navController: NavController,
-    productJson: String,
-    userViewModel: UserViewModel,
-    cartViewModel: ShoppingCartViewModel,
 ) {
-    val gson = remember { Gson() }
-    val product = gson.fromJson(productJson, PorductModel::class.java)
+    // State to track whether the product details are expanded
+    var isExpanded by remember { mutableStateOf(false) }
+    val product = ProductModel(
+        name = "Symply Dog Adult Chicken With Rice & Vegetables",
+        description = "High-quality dog food with chicken, rice, and vegetables.",
+        price = 199,
+        image = R.drawable.dog,
+    )
 
-    product?.let {
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = product.image),
+            contentDescription = null,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+                .fillMaxWidth()
+                .height(200.dp)
+                .align(Alignment.CenterHorizontally),
+            contentScale = ContentScale.Fit
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = product.name, fontSize = 24.sp, color = Color.Black)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = product.description, fontSize = 16.sp, color = Color.Gray)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "£${product.price}",
+            fontSize = 20.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Quantity Selector
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(it.image),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = it.name, fontSize = 24.sp, color = Color.Black)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = it.description, fontSize = 16.sp, color = Color.Gray)
-            Text(text = it.created_at, fontSize = 16.sp, color = Color.Gray)
-            Text(text = "\$${it.stock}", fontSize = 20.sp, color = Color.Black)
-            Text(text = "\$${it.category}", fontSize = 20.sp, color = Color.Black)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "\$${it.price}", fontSize = 20.sp, color = Color.Black)
-            Spacer(modifier = Modifier.height(16.dp))
-//            Button(onClick = { cartViewModel.addToCart(it) }) {
-//                Text(text = "Add to Cart")
-//            }
+            IconButton(onClick = { /* Decrease quantity logic */ }) {
+                Icon(imageVector = Icons.Default.Clear, contentDescription = "Decrease quantity")
+            }
+            Text(text = "1", fontSize = 20.sp)
+            IconButton(onClick = { /* Increase quantity logic */ }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Increase quantity")
+            }
         }
-    } ?: run {
-        Text(text = "Product not found", fontSize = 16.sp, color = Color.Red)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Repeat Order Button
+        Button(
+            onClick = { /* Handle repeat order logic */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+        ) {
+            Text(text = "Repeat Order")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Product Detail and Composition Buttons
+        Button(
+            onClick = { isExpanded = !isExpanded }, // Toggle the expanded state
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+        ) {
+            Text(text = if (isExpanded) "Hide Product Detail" else "Show Product Detail")
+        }
+
+        if (isExpanded) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = { /* Handle composition logic */ },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+            ) {
+                Text(text = "Composition")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Additional product details
+            Text(
+                text = "This is additional product detail information that is displayed when the section is expanded.",
+                fontSize = 14.sp,
+                color = Color.DarkGray
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Add to Cart Button
+        Button(
+            onClick = { /* Handle add to cart logic */ },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+        ) {
+            Text(text = "ADD TO CART", color = Color.White)
+        }
     }
+}
+
+data class ProductModel(
+    val name: String,
+    val description: String,
+    val price: Int,
+    val image: Int,
+)
+
+@Preview(showBackground = true)
+@Composable
+private fun showsingle() {
+
+    val navController = rememberNavController()
+
+    ProductDetailsPage(navController)
 }
