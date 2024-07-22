@@ -26,6 +26,8 @@ import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.data.view_model.UserViewModelFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.airbnb.lottie.compose.*
+import com.example.shop_app_project.R
 
 @Composable
 fun ScreenRegister(
@@ -86,6 +88,13 @@ fun ScreenRegister(
         }
     }
 
+    // Lottie Animation
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animationregister))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,7 +103,13 @@ fun ScreenRegister(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Register", fontSize = 60.sp)
+
+        // Lottie Animation
+        LottieAnimation(
+            composition,
+            progress,
+            modifier = Modifier.size(200.dp)
+        )
 
         TextField(
             value = username,
@@ -147,3 +162,4 @@ private fun getLastLocation(
             } ?: onLocationReceived("Location not found")
         }
 }
+

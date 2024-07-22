@@ -71,7 +71,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
     testImplementation("junit:junit:4.13.2")
 
-    //lottie
+    //Lottifiles
     implementation("com.airbnb.android:lottie-compose:6.4.1")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
