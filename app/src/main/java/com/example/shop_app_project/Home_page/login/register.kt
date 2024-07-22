@@ -14,19 +14,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.example.shop_app_project.data.view_model.UserViewModel
-import com.example.shop_app_project.data.view_model.UserViewModelFactory
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
+import com.example.shop_app_project.data.view_model.UserViewModel
+import com.example.shop_app_project.data.view_model.UserViewModelFactory
 
 @Composable
 fun ScreenRegister(
     navController: NavController,
     userViewModel: UserViewModel = viewModel(
         factory = UserViewModelFactory(LocalContext.current.applicationContext as Application)
-    )
+    ),
 ) {
     val savedCredentials = userViewModel.getSavedCredentials()
 
@@ -61,7 +61,7 @@ fun ScreenRegister(
         Button(onClick = {
             userViewModel.sendRegister(username = username, address = password)
             userViewModel.saveCredentials(username, password)
-            navController.navigate("Screen_login")
+            navController.navigate("home")
         }) {
             Text(text = "Submit")
         }
@@ -76,4 +76,11 @@ fun ScreenRegister(
             Text(text = registrationMessage)
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ShowRegister() {
+    val navController = rememberNavController()
+    ScreenRegister(navController = navController)
 }

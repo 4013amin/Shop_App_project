@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -22,48 +22,34 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.shop_app_project.Home_page.Main.Screen_Item.ProductDetailsPage
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 
-class MainActivity : ComponentActivity() {
+class MainLogin : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Shop_App_projectTheme {
                 val navController = rememberNavController()
-                bottom_navigations(navController)
+                bottomnavigations(navController = navController)
             }
         }
     }
 }
 
-@Composable
-fun nav() {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "Screen_register") {
-        composable("Screen_register") {
-            ScreenRegister(navController)
-        }
-        composable("Screen_login") {
-            ScreenLogin(navController)
-        }
-
-    }
-}
-
-
-data class Navigations_Item(
+data class navigationsItem(
     val route: String,
     val title: String,
-    val icon: ImageVector
+    val icon: ImageVector,
 )
 
 @Composable
-fun bottom_navigations(navController: NavController) {
+fun bottomnavigations(navController: NavController) {
+
     val items = listOf(
-        Navigations_Item("Screen_register", "Register", Icons.Default.Add),
-        Navigations_Item("Screen_login", "Login", Icons.Default.AccountCircle)
+        navigationsItem("ScreenRegister", "Register", Icons.Default.Person),
+        navigationsItem("ScreenLogin", "Login", Icons.Default.PlayArrow)
     )
+
 
     Scaffold(
         bottomBar = {
@@ -97,11 +83,14 @@ fun bottom_navigations(navController: NavController) {
     ) { innerPadding ->
         NavHost(
             navController as NavHostController,
-            startDestination = "Screen_register",
+            startDestination = "ScreenRegister",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("Screen_register") { ScreenRegister(navController) }
-            composable("Screen_login") { ScreenLogin(navController) }
+            composable("ScreenRegister") { ScreenRegister(navController) }
+            composable("ScreenLogin") { ScreenLogin(navController) }
         }
     }
 }
+
+
+

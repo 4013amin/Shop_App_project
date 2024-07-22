@@ -62,7 +62,6 @@ class MainActivity : ComponentActivity() {
 //                )
 
                 UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
-
                 BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }
