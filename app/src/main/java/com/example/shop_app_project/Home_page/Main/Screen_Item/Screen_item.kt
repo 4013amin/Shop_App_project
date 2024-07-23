@@ -33,7 +33,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.example.shop_app_project.Home_page.login.bottomnavigations
 import com.example.shop_app_project.R
+import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
 
 var gson = Gson()
@@ -73,6 +75,7 @@ fun SearchPage(navController: NavController) {
                     .background(Color(0xFFFFF3E0))
                     .padding(16.dp)
             ) {
+                Spacer(modifier = Modifier.height(50.dp))
                 SearchBar()
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryFilter()
@@ -94,7 +97,7 @@ fun SearchBar() {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(8.dp))
-            .padding(8.dp), // اضافه کردن padding برای ایجاد فاصله
+            .padding(8.dp),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -158,13 +161,13 @@ fun ProductGrid() {
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(24.dp), // Increased spacing
+        verticalArrangement = Arrangement.spacedBy(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(products.chunked(2)) { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(24.dp) // Increased spacing
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 rowItems.forEach { product ->
                     ProductCard(product)
@@ -176,30 +179,38 @@ fun ProductGrid() {
 
 @Composable
 fun ProductCard(product: prductmodelfack) {
+    val navController = rememberNavController()
+    val userViewModel: UserViewModel = viewModel()
+    val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
+
     Box(
         modifier = Modifier
-            .background(Color.White, RoundedCornerShape(16.dp)) // Increased corner radius
-            .padding(16.dp) // Increased padding
+            .background(Color(0xFFE0F7FA))
+            .clip(shape = RoundedCornerShape(20.dp))
+            .padding(10.dp)
+            .clickable {
+                navController.navigate("singleProduct")
+            }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp), // Increased spacing
+            verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
                 .background(Color(0xFFE0F7FA))
-                .padding(16.dp) // Padding inside the column
+                .padding(13.dp)
         ) {
             Image(
                 painter = painterResource(id = product.imageRes),
                 contentDescription = product.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(120.dp) // Increased image size
-                    .clip(RoundedCornerShape(16.dp)) // Increased corner radius
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(10.dp))
             )
             Text(
                 text = product.name,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp, // Increased font size
+                fontSize = 18.sp,
                 maxLines = 1
             )
         }
@@ -224,7 +235,7 @@ fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
             color = Color(0xFF388E3C)
         )
 
-        // نمایش لیست محصولات در سبد خرید
+
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(cartItems) { product ->
                 CartItem(
@@ -234,7 +245,6 @@ fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
             }
         }
 
-        // دکمه برای خالی کردن سبد خرید
         Button(
             onClick = { cartViewModel.clearCart() },
             modifier = Modifier.padding(top = 16.dp)
@@ -346,11 +356,24 @@ fun ProductDetailsPage(
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
             IconButton(onClick = { /* Decrease quantity logic */ }) {
-                Icon(imageVector = Icons.Default.Clear, contentDescription = "Decrease quantity")
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Decrease quantity",
+                    tint = Color(0xFFD20311)
+                )
             }
-            Text(text = "1", fontSize = 20.sp)
+            Text(
+                text = "1",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
             IconButton(onClick = { /* Increase quantity logic */ }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Increase quantity")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Increase quantity",
+                    tint = Color(0xFF00BF07)
+                )
             }
         }
 
@@ -360,20 +383,22 @@ fun ProductDetailsPage(
         Button(
             onClick = { /* Handle repeat order logic */ },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFE0B2))
         ) {
             Text(text = "Repeat Order")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Product Detail and Composition Buttons
         Button(
             onClick = { isExpanded = !isExpanded }, // Toggle the expanded state
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0F7FA))
         ) {
-            Text(text = if (isExpanded) "Hide Product Detail" else "Show Product Detail")
+            Text(
+                text = if (isExpanded) "Hide Product Detail" else "Show Product Detail",
+                color = Color.Black, fontWeight = FontWeight.Bold
+            )
         }
 
         if (isExpanded) {
@@ -381,7 +406,7 @@ fun ProductDetailsPage(
             Button(
                 onClick = { /* Handle composition logic */ },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
                 Text(text = "Composition")
             }
@@ -402,7 +427,7 @@ fun ProductDetailsPage(
         Button(
             onClick = { /* Handle add to cart logic */ },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF09BE10))
         ) {
             Text(text = "ADD TO CART", color = Color.White)
         }

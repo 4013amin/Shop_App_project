@@ -1,5 +1,6 @@
 package com.example.shop_app_project.Home_page.Main
 
+import BottomNavigations
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.shop_app_project.Home_page.Main.Screen_Item.BottomNavigations
 import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
@@ -172,7 +172,7 @@ fun UiHomePage(
                 Text(
                     text = "Trending now",
                     fontSize = 30.sp,
-                    color = Color(0xFF047D09),
+                    color = Color(0xFFCD8822),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -209,7 +209,7 @@ fun UiHomePage(
                 Text(
                     text = "Browse pet types",
                     fontSize = 30.sp,
-                    color = Color(0xFF047D09),
+                    color = Color(0xFFCD8822),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -222,6 +222,17 @@ fun UiHomePage(
 
             item {
                 Spacer(modifier = Modifier.height(18.dp))
+            }
+
+
+            item {
+                Text(
+                    text = "Products For you",
+                    fontSize = 30.sp,
+                    color = Color(0xFFCD8822),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
 
             item {
@@ -265,18 +276,12 @@ fun UiHomePage(
             }
 
 
-
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-
-
             //DogProduct
             item {
                 Text(
-                    text = "Dog",
+                    text = "Product For Dog",
                     fontSize = 30.sp,
-                    color = Color(0xFF047D09),
+                    color = Color(0xFFCD8822),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -509,7 +514,7 @@ fun AnimalBoxes() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             AnimalBox(

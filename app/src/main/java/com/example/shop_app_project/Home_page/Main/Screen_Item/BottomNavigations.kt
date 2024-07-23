@@ -1,6 +1,3 @@
-package com.example.shop_app_project.Home_page.Main.Screen_Item//package com.example.shop_app_project.Home_page.Main.Screen_Item
-
-import ScreenRegister
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -9,32 +6,27 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
-
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
+import com.example.shop_app_project.Home_page.Main.Screen_Item.CartPage
+import com.example.shop_app_project.Home_page.Main.Screen_Item.ProductDetailsPage
+import com.example.shop_app_project.Home_page.Main.Screen_Item.ProfilePage
+import com.example.shop_app_project.Home_page.Main.Screen_Item.SearchPage
 import com.example.shop_app_project.Home_page.Main.UiHomePage
-import com.example.shop_app_project.Home_page.login.ScreenLogin
-import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
-import com.google.gson.Gson
-
 
 data class NavigationsItem(
     val route: String,
@@ -49,12 +41,12 @@ val navItems = listOf(
     NavigationsItem("profile", "Profile", Icons.Default.Person)
 )
 
-var products = mutableStateOf<List<PorductModel>>(arrayListOf())
+//var products = mutableStateOf<List<PorductModel>>(arrayListOf())
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigations(
-    navController: NavController,
+    navController: NavHostController,
     userViewModel: UserViewModel,
     shoppingCartViewModel: ShoppingCartViewModel,
 ) {
@@ -76,13 +68,13 @@ fun BottomNavigations(
                                         }
                                     }
                                 }) {
-                                    androidx.compose.material3.Icon(
+                                    Icon(
                                         imageVector = item.icon,
                                         contentDescription = item.title
                                     )
                                 }
                             } else {
-                                androidx.compose.material3.Icon(
+                                Icon(
                                     imageVector = item.icon,
                                     contentDescription = item.title
                                 )
@@ -104,30 +96,37 @@ fun BottomNavigations(
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController as NavHostController,
-            startDestination = "home",
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("home") {
-                UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
-            }
-            composable("search") {
-                SearchPage(
-                    navController = navController
-                )
-            }
-            composable("profile") { ProfilePage() }
-            composable("singlePage") {
-                ProductDetailsPage(navController)
-            }
-            composable("cart") {
-                CartPage(shoppingCartViewModel)
-            }
-
-
-        }
+        NavGraph(
+            navController = navController,
+            shoppingCartViewModel = shoppingCartViewModel,
+            modifier = androidx.compose.ui.Modifier.padding(innerPadding)
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NavGraph(
+    navController: NavHostController,
+    shoppingCartViewModel: ShoppingCartViewModel,
+    modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier
+) {
+    NavHost(navController = navController, startDestination = "home", modifier = modifier) {
+        composable("home") {
+            UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
+        }
+        composable("search") {
+            SearchPage(navController = navController)
+        }
+        composable("profile") {
+            ProfilePage()
+        }
 
+        composable("singleProduct") {
+            ProductDetailsPage(navController)
+        }
+        composable("cart") {
+            CartPage(shoppingCartViewModel)
+        }
+    }
+}
