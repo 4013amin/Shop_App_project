@@ -70,7 +70,7 @@ fun SearchPage(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFF5F5F5))
+                    .background(Color(0xFFFFF3E0))
                     .padding(16.dp)
             ) {
                 SearchBar()
@@ -149,17 +149,22 @@ fun ProductGrid() {
         prductmodelfack("Dog Treatment", R.drawable.tools),
         prductmodelfack("Dog Grooming", R.drawable.tools),
         prductmodelfack("Cat Food", R.drawable.tools),
+        prductmodelfack("Cat Food", R.drawable.tools),
+        prductmodelfack("Cat Food", R.drawable.tools),
+        prductmodelfack("Cat Food", R.drawable.tools),
+        prductmodelfack("Cat Food", R.drawable.tools),
         prductmodelfack("Cat Treats", R.drawable.tools)
     )
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp), // Increased spacing
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(products.chunked(2)) { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(24.dp) // Increased spacing
             ) {
                 rowItems.forEach { product ->
                     ProductCard(product)
@@ -173,26 +178,28 @@ fun ProductGrid() {
 fun ProductCard(product: prductmodelfack) {
     Box(
         modifier = Modifier
-//            .weight(1f)
-            .background(Color.White, RoundedCornerShape(8.dp))
-            .padding(8.dp)
+            .background(Color.White, RoundedCornerShape(16.dp)) // Increased corner radius
+            .padding(16.dp) // Increased padding
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp), // Increased spacing
+            modifier = Modifier
+                .background(Color(0xFFE0F7FA))
+                .padding(16.dp) // Padding inside the column
         ) {
             Image(
                 painter = painterResource(id = product.imageRes),
                 contentDescription = product.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .size(120.dp) // Increased image size
+                    .clip(RoundedCornerShape(16.dp)) // Increased corner radius
             )
             Text(
                 text = product.name,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                fontSize = 18.sp, // Increased font size
                 maxLines = 1
             )
         }
@@ -409,11 +416,11 @@ data class ProductModel(
     val image: Int,
 )
 
-@Preview(showBackground = true)
-@Composable
-private fun showsingle() {
-
-    val navController = rememberNavController()
-
-    ProductDetailsPage(navController)
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun showsingle() {
+//
+//    val navController = rememberNavController()
+//
+//    ProductDetailsPage(navController)
+//}
