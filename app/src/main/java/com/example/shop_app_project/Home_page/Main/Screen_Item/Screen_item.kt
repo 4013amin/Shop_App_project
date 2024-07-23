@@ -1,22 +1,21 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item
 
-import com.example.shop_app_project.data.models.product.PorductModel
+import android.annotation.SuppressLint
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,80 +34,167 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.R
-import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
 
 var gson = Gson()
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+data class CategoryModel(
+    val name: String,
+    val imageRes: Int,
+)
+
+data class prductmodelfack(
+    val name: String,
+    val imageRes: Int,
+)
+
+
+@ExperimentalMaterial3Api
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SearchPage(
-    userViewModel: UserViewModel = viewModel(),
-    shoppingCartViewModel: ShoppingCartViewModel = viewModel(),
-    navController: NavController,
-) {
-    var searchText by remember { mutableStateOf(TextFieldValue("")) }
+fun SearchPage(navController: NavController) {
+    SearchBar()
 
-    LaunchedEffect(Unit) {
-        userViewModel.getAllProducts()
-    }
-
-    val products by userViewModel.products
-
-    //search_filter
-    var search_filter = products.filter { product ->
-        product.name.contains(searchText.text, ignoreCase = true)
-    }
-
-    Log.d("SearchPage", "Number of products: ${products.size}")
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .border(1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp)),
-            placeholder = {
-                Text(
-                    "Search here...",
-                    style = MaterialTheme.typography.labelMedium.copy(color = Color.Black)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Explore Categories") },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color.Black
                 )
-            },
-            colors = TextFieldDefaults.textFieldColors(Color.Black),
-            textStyle = MaterialTheme.typography.bodyLarge
-        )
-
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            contentPadding = PaddingValues(10.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp)
-        ) {
-            items(search_filter) { product ->
-//                ProductItem(
-//                    name = product.name,
-//                    description = product.description,
-//                    price = product.price,
-//                    image = product.image,
-//                    addToCart = {
-////                        shoppingCartViewModel.addToCart(product)
-//                    },
-//                    onClick = {
-//                        val productGson = gson.toJson(product)
-//                        navController.navigate("single_product?product=${productGson}")
-//                    }
-//                )
-
+            )
+        },
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF5F5F5))
+                    .padding(16.dp)
+            ) {
+                SearchBar()
+                Spacer(modifier = Modifier.height(16.dp))
+                CategoryFilter()
+                Spacer(modifier = Modifier.height(16.dp))
+                ProductGrid()
             }
+        }
+    )
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun SearchBar() {
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    TextField(
+        value = searchQuery,
+        onValueChange = { searchQuery = it },
+        placeholder = { Text(text = "Search Product or Brand") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .padding(8.dp), // اضافه کردن padding برای ایجاد فاصله
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon"
+            )
+        },
+        colors = TextFieldDefaults.textFieldColors(
+            containerColor = Color.White,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
+    )
+}
+
+@Composable
+fun CategoryFilter() {
+    val categories = listOf("All", "Dog", "Cat", "Small Animal", "Bird")
+    var selectedCategory by remember { mutableStateOf("All") }
+
+    LazyRow(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(categories) { category ->
+            CategoryChip(
+                category = category,
+                isSelected = selectedCategory == category,
+                onClick = { selectedCategory = category }
+            )
+        }
+    }
+}
+
+@Composable
+fun CategoryChip(category: String, isSelected: Boolean, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .padding(4.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(if (isSelected) Color(0xFFFFE0B2) else Color.White)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(text = category, color = if (isSelected) Color.Black else Color.Gray)
+    }
+}
+
+@Composable
+fun ProductGrid() {
+    val products = listOf(
+        prductmodelfack("Dog Food", R.drawable.tools),
+        prductmodelfack("Dog Treats", R.drawable.tools),
+        prductmodelfack("Dog Treatment", R.drawable.tools),
+        prductmodelfack("Dog Grooming", R.drawable.tools),
+        prductmodelfack("Cat Food", R.drawable.tools),
+        prductmodelfack("Cat Treats", R.drawable.tools)
+    )
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(products.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                rowItems.forEach { product ->
+                    ProductCard(product)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductCard(product: prductmodelfack) {
+    Box(
+        modifier = Modifier
+//            .weight(1f)
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .padding(8.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = product.imageRes),
+                contentDescription = product.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Text(
+                text = product.name,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                maxLines = 1
+            )
         }
     }
 }
@@ -152,7 +238,10 @@ fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
 }
 
 @Composable
-fun CartItem(product: com.example.shop_app_project.Home_page.Main.ProductModel, onRemove: () -> Unit) {
+fun CartItem(
+    product: com.example.shop_app_project.Home_page.Main.ProductModel,
+    onRemove: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

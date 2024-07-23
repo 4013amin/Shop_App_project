@@ -13,7 +13,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -106,19 +108,15 @@ fun UiHomePage(
         ProductModel("Rabbit Hutch", "Comfortable hutch for rabbits", 120, R.drawable.tools)
     )
 
-
     Scaffold(
-        modifier = Modifier
-            .background(color = Color.White)
-            .padding(0.dp),
         topBar = {
             TopAppBar(
                 title = { Text(text = "Pet Store") },
                 navigationIcon = {
                     IconButton(onClick = {
-                        // Handle menu click
+                        navController.navigate("search")
                     }) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "Explore")
                     }
                 },
                 actions = {
@@ -514,10 +512,18 @@ fun AnimalBoxes() {
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         item {
-            AnimalBox(imageRes = R.drawable.dog, backgroundColor = Color(0xFFFFF3E0), text = "Dog")
+            AnimalBox(
+                imageRes = R.drawable.dog,
+                backgroundColor = Color(0xFFFFF3E0),
+                text = "Dog"
+            )
         }
         item {
-            AnimalBox(imageRes = R.drawable.cat, backgroundColor = Color(0xFFE0F7FA), text = "Cat")
+            AnimalBox(
+                imageRes = R.drawable.cat,
+                backgroundColor = Color(0xFFE0F7FA),
+                text = "Cat"
+            )
         }
         item {
             AnimalBox(
@@ -541,4 +547,4 @@ fun AnimalBoxes() {
 private fun Animals() {
     AnimalBoxes()
 }
-    
+

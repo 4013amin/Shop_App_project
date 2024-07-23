@@ -1,5 +1,6 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item//package com.example.shop_app_project.Home_page.Main.Screen_Item
 
+import ScreenRegister
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -27,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.shop_app_project.Home_page.Main.UiHomePage
+import com.example.shop_app_project.Home_page.login.ScreenLogin
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
@@ -48,6 +51,7 @@ val navItems = listOf(
 
 var products = mutableStateOf<List<PorductModel>>(arrayListOf())
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigations(
     navController: NavController,
@@ -110,8 +114,6 @@ fun BottomNavigations(
             }
             composable("search") {
                 SearchPage(
-                    userViewModel = userViewModel,
-                    shoppingCartViewModel = shoppingCartViewModel,
                     navController = navController
                 )
             }
@@ -122,6 +124,8 @@ fun BottomNavigations(
             composable("cart") {
                 CartPage(shoppingCartViewModel)
             }
+
+
         }
     }
 }
