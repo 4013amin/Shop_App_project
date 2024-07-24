@@ -2,6 +2,7 @@ package com.example.shop_app_project.Home_page.Main.SharedPreferencesManager
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.shop_app_project.Home_page.Main.Screen_Item.ProductModel
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -14,14 +15,14 @@ object SharedPreferencesManager {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    fun saveCartItems(context: Context, cartItems: List<PorductModel>) {
+    fun saveCartItems(context: Context, cartItems: List<com.example.shop_app_project.Home_page.Main.ProductModel>) {
         val json = Gson().toJson(cartItems)
         getPreferences(context).edit().putString(CART_KEY, json).apply()
     }
 
-    fun loadCartItems(context: Context): List<PorductModel> {
+    fun loadCartItems(context: Context): List<com.example.shop_app_project.Home_page.Main.ProductModel> {
         val json = getPreferences(context).getString(CART_KEY, null) ?: return emptyList()
-        val type = object : TypeToken<List<PorductModel>>() {}.type
+        val type = object : TypeToken<List<com.example.shop_app_project.Home_page.Main.ProductModel>>() {}.type
         return Gson().fromJson(json, type)
     }
 

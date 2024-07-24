@@ -1,27 +1,24 @@
 package com.example.shop_app_project.data.api
 
-import com.example.shop_app_project.data.models.Profile.Profile
 import com.example.shop_app_project.data.models.product.Category
 import com.example.shop_app_project.data.models.product.PorductModel
 import com.example.shop_app_project.data.models.register.login_model
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface login {
-
+    @FormUrlEncoded
     @POST("/api/register_user/")
     suspend fun registerUser(
-        @Body user: String,
-        password: String,
-        phone: String,
-        city: String,
-        address: String,
-        postalCode: String
+        @Field("username") username: String,
+        @Field("password") password: String,
+        @Field("phone") phone: String,
+        @Field("location") location: String
     ): Response<login_model>
-
 
     @FormUrlEncoded
     @POST("login_user")
@@ -33,8 +30,5 @@ interface login {
 
     @GET("/api/categories/")
     suspend fun getCategories(): Response<List<Category>>
-
-    @GET()
-    suspend fun getProfile(): Response<Profile>
 
 }
