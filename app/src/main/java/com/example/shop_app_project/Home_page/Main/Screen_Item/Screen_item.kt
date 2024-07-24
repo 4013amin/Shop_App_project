@@ -96,8 +96,7 @@ fun SearchBar() {
         placeholder = { Text(text = "Search Product or Brand") },
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(8.dp))
-            .padding(8.dp),
+            .background(Color.White, RoundedCornerShape(8.dp)),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -111,6 +110,7 @@ fun SearchBar() {
         )
     )
 }
+
 
 @Composable
 fun CategoryFilter() {

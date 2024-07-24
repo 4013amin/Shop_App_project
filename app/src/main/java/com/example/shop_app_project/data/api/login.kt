@@ -15,7 +15,9 @@ interface login {
     @POST("/api/register_user/")
     suspend fun registerUser(
         @Field("username") username: String,
-        @Field("address") address: String
+        @Field("password") password: String,
+        @Field("phone") phone: String,
+        @Field("location") location: String
     ): Response<login_model>
 
     @FormUrlEncoded

@@ -3,6 +3,7 @@ package com.example.shop_app_project.data.view_model
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import android.util.Pair
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,10 +33,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences =
         application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
-    fun sendRegister(username: String, address: String) {
+    fun sendRegister(username: String, password: String, phone: String, location: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = try {
-                Utils_ret.api.registerUser(username, address)
+                Utils_ret.api.registerUser(username, password, phone, location)
             } catch (e: IOException) {
                 Log.e("UserViewModel", "Network error occurred during registration.", e)
                 registrationResult.value = "Network error occurred."
@@ -53,7 +54,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 //shared
                 var editor = sharedPreferences.edit()
                 editor.putString("username", username)
-                editor.putString("password", address)
+                editor.putString("password", password)
+                editor.putString("phone", phone)
+                editor.putString("location", location)
                 editor.apply()
 
             } else {
@@ -148,19 +151,31 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-    fun saveCredentials(username: String, password: String) {
+    fun saveCredentials(username: String, password: String, phone: String, location: String) {
         with(sharedPreferences.edit()) {
             putString("username", username)
             putString("password", password)
+            putString("phone", phone)
+            putString("location", location)
             apply()
         }
     }
 
-    fun getSavedCredentials(): Pair<String, String> {
+
+    fun getSavedCredentials(): Quadruple<String, String, String, String> {
         val username = sharedPreferences.getString("username", "") ?: ""
         val password = sharedPreferences.getString("password", "") ?: ""
-        return Pair(username, password)
+        val phone = sharedPreferences.getString("phone", "") ?: ""
+        val location = sharedPreferences.getString("location", "") ?: ""
+        return Quadruple(username, password, phone, location)
     }
+
+    data class Quadruple<out A, out B, out C, out D>(
+        val first: A,
+        val second: B,
+        val third: C,
+        val fourth: D
+    )
 
 //    // تابع برای اضافه کردن به سبد خرید
 //    fun addToCart(product: PorductModel) {
@@ -182,6 +197,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         shoppingCartViewModel.clearCart()
     }
 }
+
 
 
 

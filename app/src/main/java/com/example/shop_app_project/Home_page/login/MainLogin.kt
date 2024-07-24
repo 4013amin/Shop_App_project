@@ -1,6 +1,6 @@
 package com.example.shop_app_project.Home_page.login
 
-import ScreenRegister
+import RegisterScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -102,7 +102,7 @@ fun bottomnavigations(
         navController as NavHostController,
         startDestination = "ScreenRegister",
     ) {
-        composable("ScreenRegister") { ScreenRegister(navController = navController) }
+        composable("ScreenRegister") { RegisterScreen(navController, userViewModel) }
         composable("ScreenLogin") { ScreenLogin(navController) }
         composable("home") {
             UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
