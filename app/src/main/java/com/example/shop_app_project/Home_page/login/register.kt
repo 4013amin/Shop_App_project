@@ -374,13 +374,13 @@ fun RegisterScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Button(
-                            onClick = { /* Handle register action */ },
+                            onClick = { navController.navigate("home") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(color = Color(0xFFE0F7FA)),
                             colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = Color(0xFFE0F7FA), // Background color
-                                contentColor = Color.Black // Text and icon color
+                                containerColor = Color(0xFFE0F7FA),
+                                contentColor = Color.Black
                             )
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -395,12 +395,12 @@ fun RegisterScreen(
                         }
 
                         Button(
-                            onClick = { /* Handle login action */ },
+                            onClick = { navController.navigate("ScreenLogin") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(color = Color(0xFFFFB004)),
                             colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color.Black // Text and icon color
+                                contentColor = Color.Black
                             )
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -450,4 +450,9 @@ fun getLastLocation(
 @Preview(showBackground = true)
 @Composable
 private fun showRegisterScreen() {
+
+    val navController = rememberNavController()
+    val userViewModel: UserViewModel = viewModel()
+
+    RegisterScreen(navController = navController, userViewModel)
 }

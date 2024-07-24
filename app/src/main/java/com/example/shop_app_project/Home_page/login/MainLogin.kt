@@ -103,7 +103,7 @@ fun bottomnavigations(
         startDestination = "ScreenRegister",
     ) {
         composable("ScreenRegister") { RegisterScreen(navController, userViewModel) }
-        composable("ScreenLogin") { ScreenLogin(navController) }
+        composable("ScreenLogin") { LoginScreen(navController, userViewModel) }
         composable("home") {
             UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
         }
