@@ -65,6 +65,13 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    //checkLogin
+    fun checkCredentials(): Boolean {
+        val savedCredentials = getSavedCredentials()
+
+        return savedCredentials.first.isNotBlank() && savedCredentials.second.isNotBlank()
+    }
+
     fun sendLogin(username: String, address: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = try {

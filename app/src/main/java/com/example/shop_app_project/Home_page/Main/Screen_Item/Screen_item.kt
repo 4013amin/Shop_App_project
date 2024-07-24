@@ -33,7 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
-import com.example.shop_app_project.Home_page.login.bottomnavigations
 import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson

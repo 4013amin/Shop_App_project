@@ -15,7 +15,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,6 +46,12 @@ class MainLogin : ComponentActivity() {
                 val navController = rememberNavController()
                 val userViewModel: UserViewModel = viewModel()
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
+                var isLoggedIn by remember { mutableStateOf(userViewModel.checkCredentials()) }
+                LaunchedEffect(isLoggedIn) {
+                    if (isLoggedIn) {
+                        navController.navigate("home")
+                    }
+                }
                 bottomnavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }
@@ -102,6 +112,7 @@ fun bottomnavigations(
         navController as NavHostController,
         startDestination = "ScreenRegister",
     ) {
+
         composable("ScreenRegister") { RegisterScreen(navController, userViewModel) }
         composable("ScreenLogin") { LoginScreen(navController, userViewModel) }
         composable("home") {

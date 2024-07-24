@@ -49,128 +49,6 @@ import com.google.android.gms.location.LocationServices
 import com.airbnb.lottie.compose.*
 import com.example.shop_app_project.R
 
-//
-//@Composable
-//fun ScreenRegister(
-//    navController: NavController,
-//    userViewModel: UserViewModel = viewModel(
-//        factory = UserViewModelFactory(LocalContext.current.applicationContext as Application)
-//    ),
-//) {
-//    val context = LocalContext.current
-//    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-//    val savedCredentials = userViewModel.getSavedCredentials()
-//
-//    var username by remember { mutableStateOf(savedCredentials.first) }
-//    var password by remember { mutableStateOf(savedCredentials.second) }
-//    var location by remember { mutableStateOf("") }
-//    var registrationMessage by remember { mutableStateOf("") }
-//
-//    val locationPermissionLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.RequestMultiplePermissions()
-//    ) { permissions ->
-//        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true || permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
-//            getLastLocation(fusedLocationClient) { loc ->
-//                location = loc
-//            }
-//        } else {
-//            registrationMessage = "Location permission denied."
-//        }
-//    }
-//
-//    LaunchedEffect(Unit) {
-//        when {
-//            ContextCompat.checkSelfPermission(
-//                context,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            ) == PackageManager.PERMISSION_GRANTED -> {
-//                getLastLocation(fusedLocationClient) { loc ->
-//                    location = loc
-//                }
-//            }
-//
-//            ContextCompat.checkSelfPermission(
-//                context,
-//                Manifest.permission.ACCESS_COARSE_LOCATION
-//            ) == PackageManager.PERMISSION_GRANTED -> {
-//                getLastLocation(fusedLocationClient) { loc ->
-//                    location = loc
-//                }
-//            }
-//
-//            else -> {
-//                locationPermissionLauncher.launch(
-//                    arrayOf(
-//                        Manifest.permission.ACCESS_FINE_LOCATION,
-//                        Manifest.permission.ACCESS_COARSE_LOCATION
-//                    )
-//                )
-//            }
-//        }
-//    }
-//
-//    // Lottie Animation
-//    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animationregister))
-//    val progress by animateLottieCompositionAsState(
-//        composition,
-//        iterations = LottieConstants.IterateForever
-//    )
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(color = Color.White)
-//            .padding(15.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//
-//        // Lottie Animation
-//        LottieAnimation(
-//            composition,
-//            progress,
-//            modifier = Modifier.size(200.dp)
-//        )
-//
-//        TextField(
-//            value = username,
-//            onValueChange = { username = it },
-//            label = { Text("Username") }
-//        )
-//
-//        TextField(
-//            value = password,
-//            onValueChange = { password = it },
-//            label = { Text("Password") },
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//
-//        TextField(
-//            value = location,
-//            onValueChange = { location = it },
-//            label = { Text("Location") }
-//        )
-//
-//        Button(onClick = {
-//            userViewModel.sendRegister(username = username, address = password)
-//            userViewModel.saveCredentials(username, password)
-//            navController.navigate("home")
-//        }) {
-//            Text(text = "Submit")
-//        }
-//
-//        LaunchedEffect(userViewModel.registrationResult.value) {
-//            if (userViewModel.registrationResult.value.isNotBlank()) {
-//                registrationMessage = userViewModel.registrationResult.value
-//            }
-//        }
-//
-//        if (registrationMessage.isNotBlank()) {
-//            Text(text = registrationMessage)
-//        }
-//    }
-//}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -193,6 +71,15 @@ fun RegisterScreen(
     var registrationMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
+    var isLoggedIn by remember { mutableStateOf(userViewModel.checkCredentials()) }
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
+            navController.navigate("home")
+        }
+    }
+
 
     // location
     val locationPermissionLauncher = rememberLauncherForActivityResult(
