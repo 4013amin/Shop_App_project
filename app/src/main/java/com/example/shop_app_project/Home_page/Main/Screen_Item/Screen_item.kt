@@ -1,12 +1,12 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.VectorConverter
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -33,6 +33,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
@@ -217,8 +222,9 @@ fun ProductCard(product: prductmodelfack) {
 }
 
 @Composable
-fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
+fun CartPage(cartViewModel: ShoppingCartViewModel) {
     val cartItems by cartViewModel.cartItems.collectAsState()
+    val textColor = Color(0xFFFFB004)
 
     Column(
         modifier = Modifier
@@ -227,28 +233,40 @@ fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Cart Page",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF388E3C)
-        )
-
-
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(cartItems) { product ->
-                CartItem(
-                    product = product,
-                    onRemove = { cartViewModel.removeFromCart(product) }
-                )
+        if (cartItems.isEmpty()) {
+            EmptyCartAnimation()
+        } else {
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(cartItems) { product ->
+                    CartItem(
+                        product = product,
+                        onRemove = { cartViewModel.removeFromCart(product) }
+                    )
+                }
             }
+
         }
+
 
         Button(
             onClick = { cartViewModel.clearCart() },
-            modifier = Modifier.padding(top = 16.dp)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFE0F7FA),
+                contentColor = Color.Black
+            )
         ) {
             Text(text = "Clear Cart")
+        }
+
+
+        Button(
+            onClick = { cartViewModel.clearCart() },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFFB004),
+                contentColor = Color.Black
+            )
+        ) {
+            Text(text = "the payment")
         }
     }
 }
@@ -258,11 +276,12 @@ fun CartItem(
     product: com.example.shop_app_project.Home_page.Main.ProductModel,
     onRemove: () -> Unit
 ) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(Color.LightGray)
+            .background(Color(0xFFFFB004))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -271,8 +290,7 @@ fun CartItem(
             contentDescription = null,
             modifier = Modifier
                 .size(64.dp)
-                .clip(CircleShape)
-                .background(Color.Gray),
+                .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
 
@@ -282,18 +300,49 @@ fun CartItem(
             modifier = Modifier
                 .weight(1f)
         ) {
-            Text(text = product.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(text = product.description, fontSize = 14.sp, color = Color.Gray, maxLines = 1)
+            Text(
+                text = product.name,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFE0F7FA)
+            )
+            Text(text = product.description, fontSize = 14.sp, color = Color.Black, maxLines = 1)
             Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
         }
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Button(onClick = onRemove) {
-            Text(text = "Remove")
+        Button(
+            onClick = onRemove,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFE0F7FA),
+                contentColor = Color.Black
+            )
+        ) {
+            Text(text = "Remove", color = Color.Black)
         }
     }
 }
+
+@Composable
+fun EmptyCartAnimation() {
+    Box(
+        modifier = Modifier
+            .background(Color.White)
+            .padding(15.dp)
+    ) {
+
+        Image(painter = painterResource(id = R.drawable.register), contentDescription = "")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun showCardPage() {
+    var cartViewModel: ShoppingCartViewModel = viewModel()
+    CartPage(cartViewModel)
+}
+
 
 @Composable
 fun ProfilePage() {
@@ -439,12 +488,3 @@ data class ProductModel(
     val price: Int,
     val image: Int,
 )
-
-//@Preview(showBackground = true)
-//@Composable
-//private fun showsingle() {
-//
-//    val navController = rememberNavController()
-//
-//    ProductDetailsPage(navController)
-//}
