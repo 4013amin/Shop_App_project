@@ -9,8 +9,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
@@ -34,6 +37,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -153,7 +157,7 @@ fun RegisterScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
                     modifier = Modifier.padding(10.dp)
                 ) {
                     OutlinedTextField(
@@ -187,11 +191,13 @@ fun RegisterScreen(
                             password = it
                             userViewModel.saveCredentials(username, password, phone, location)
                         },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
                         label = { Text(text = "Password", color = Color.Black) },
                         modifier = Modifier.padding(10.dp),
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Person,
+                                imageVector = Icons.Default.Lock,
                                 contentDescription = "Password Icon",
                                 tint = Color.Black
                             )
@@ -221,14 +227,14 @@ fun RegisterScreen(
                                 tint = Color.Black
                             )
                         },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = Color.Black,
                             cursorColor = MaterialTheme.colorScheme.primary,
                             focusedLabelColor = MaterialTheme.colorScheme.primary,
                         ),
-                        textStyle = TextStyle(textColor)
-
+                        textStyle = LocalTextStyle.current.copy(color = Color.Black)
                     )
 
                     OutlinedTextField(
@@ -287,6 +293,7 @@ fun RegisterScreen(
                                 .fillMaxWidth()
                                 .background(color = Color(0xFFFFB004)),
                             colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = Color(0xFFFFB004),
                                 contentColor = Color.Black
                             )
                         ) {
@@ -300,6 +307,7 @@ fun RegisterScreen(
                                 Text("Login", color = Color.Black)
                             }
                         }
+
                     }
                 }
             }
@@ -326,20 +334,9 @@ fun getLastLocation(
             val loc = "Lat: ${it.latitude}, Lon: ${it.longitude}"
             onLocationReceived(loc)
         } ?: run {
-            onLocationReceived("Location not available")
+            onLocationReceived("Turn on your locatio")
         }
     }.addOnFailureListener {
-        onLocationReceived("Failed to get location")
+        onLocationReceived("Turn on your location")
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-private fun showRegisterScreen() {
-
-    val navController = rememberNavController()
-    val userViewModel: UserViewModel = viewModel()
-
-    RegisterScreen(navController = navController, userViewModel)
 }

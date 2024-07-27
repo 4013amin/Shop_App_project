@@ -226,17 +226,22 @@ fun CartPage(cartViewModel: ShoppingCartViewModel) {
     val cartItems by cartViewModel.cartItems.collectAsState()
     val textColor = Color(0xFFFFB004)
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
+
         if (cartItems.isEmpty()) {
             EmptyCartAnimation()
+
         } else {
-            LazyColumn(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp)
+            ) {
                 items(cartItems) { product ->
                     CartItem(
                         product = product,
@@ -245,28 +250,36 @@ fun CartPage(cartViewModel: ShoppingCartViewModel) {
                 }
             }
 
-        }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+                    .background(Color.White)
+            ) {
+                Button(
+                    onClick = { cartViewModel.clearCart() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE0F7FA),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = "Clear Cart")
+                }
 
+                Spacer(modifier = Modifier.height(8.dp))
 
-        Button(
-            onClick = { cartViewModel.clearCart() },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFE0F7FA),
-                contentColor = Color.Black
-            )
-        ) {
-            Text(text = "Clear Cart")
-        }
-
-
-        Button(
-            onClick = { cartViewModel.clearCart() },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFFB004),
-                contentColor = Color.Black
-            )
-        ) {
-            Text(text = "the payment")
+                Button(
+                    onClick = { cartViewModel.clearCart() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFFB004),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = "The Payment")
+                }
+            }
         }
     }
 }
@@ -276,7 +289,6 @@ fun CartItem(
     product: com.example.shop_app_project.Home_page.Main.ProductModel,
     onRemove: () -> Unit
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -328,19 +340,24 @@ fun CartItem(
 fun EmptyCartAnimation() {
     Box(
         modifier = Modifier
+            .fillMaxSize()
             .background(Color.White)
-            .padding(15.dp)
+            .clip(RoundedCornerShape(0.dp)),
+        contentAlignment = Alignment.Center
     ) {
-
-        Image(painter = painterResource(id = R.drawable.register), contentDescription = "")
+        Image(
+            painter = painterResource(id = R.drawable.cartcat),
+            contentDescription = "Empty Cart",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun showCardPage() {
-    var cartViewModel: ShoppingCartViewModel = viewModel()
-    CartPage(cartViewModel)
+private fun showImage() {
+    EmptyCartAnimation()
 }
 
 
@@ -362,8 +379,11 @@ fun ProfilePage() {
 fun ProductDetailsPage(
     navController: NavController,
 ) {
-    // State to track whether the product details are expanded
+
     var isExpanded by remember { mutableStateOf(false) }
+    var counter by remember {
+        mutableStateOf(1)
+    }
     val product = ProductModel(
         name = "Symply Dog Adult Chicken With Rice & Vegetables",
         description = "High-quality dog food with chicken, rice, and vegetables.",
@@ -398,12 +418,12 @@ fun ProductDetailsPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Quantity Selector
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            IconButton(onClick = { /* Decrease quantity logic */ }) {
+            IconButton(onClick = { if (counter > 1) counter -= 1 }) {
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Decrease quantity",
@@ -411,12 +431,12 @@ fun ProductDetailsPage(
                 )
             }
             Text(
-                text = "1",
+                text = "$counter",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            IconButton(onClick = { /* Increase quantity logic */ }) {
+            IconButton(onClick = { counter += 1 }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Increase quantity",
@@ -427,7 +447,7 @@ fun ProductDetailsPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Repeat Order Button
+
         Button(
             onClick = { /* Handle repeat order logic */ },
             modifier = Modifier.fillMaxWidth(),
@@ -439,7 +459,7 @@ fun ProductDetailsPage(
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { isExpanded = !isExpanded }, // Toggle the expanded state
+            onClick = { isExpanded = !isExpanded },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0F7FA))
         ) {
@@ -461,7 +481,7 @@ fun ProductDetailsPage(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Additional product details
+
             Text(
                 text = "This is additional product detail information that is displayed when the section is expanded.",
                 fontSize = 14.sp,
@@ -471,7 +491,6 @@ fun ProductDetailsPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Add to Cart Button
         Button(
             onClick = { /* Handle add to cart logic */ },
             modifier = Modifier.fillMaxWidth(),

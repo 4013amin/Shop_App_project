@@ -252,7 +252,7 @@ fun UiHomePage(
                             },
                             onClick = {
                                 val productJson = gson.toJson(product)
-                                navController.navigate("ProductDetailsPage?product=$productJson")
+                                navController.navigate("singlePage")
                             }
                         )
                     }
@@ -260,20 +260,20 @@ fun UiHomePage(
             }
 
 
-            // Categories
-            item {
-                LazyRow(
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    items(categories) { category ->
-                        CategoryItem(imageRes = category.imageRes, name = category.name)
-                    }
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(18.dp))
-            }
+//            // Categories
+//            item {
+//                LazyRow(
+//                    modifier = Modifier.padding(vertical = 8.dp)
+//                ) {
+//                    items(categories) { category ->
+//                        CategoryItem(imageRes = category.imageRes, name = category.name)
+//                    }
+//                }
+//            }
+//
+//            item {
+//                Spacer(modifier = Modifier.height(18.dp))
+//            }
 
 
             //DogProduct
@@ -299,9 +299,10 @@ fun UiHomePage(
                             description = product.description,
                             price = product.price,
                             image = product.image,
-                            addToCart = { /*TODO*/ }) {
+                            addToCart = {}, onClick = {
+                                navController.navigate("singlePage")
+                            })
 
-                        }
                     }
                 }
             }
