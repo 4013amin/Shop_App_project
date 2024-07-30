@@ -237,30 +237,30 @@ fun RegisterScreen(
                         textStyle = LocalTextStyle.current.copy(color = Color.Black)
                     )
 
-                    OutlinedTextField(
-                        value = location,
-                        onValueChange = {
-                            location = it
-                            userViewModel.saveCredentials(username, password, phone, location)
-                        },
-                        label = { Text(text = "Location", color = Color.Black) },
-                        modifier = Modifier.padding(10.dp),
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = "Location Icon",
-                                tint = Color.Black
-                            )
-                        },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = Color.Black,
-                            cursorColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                        ),
-                        textStyle = TextStyle(textColor)
-
-                    )
+//                    OutlinedTextField(
+//                        value = location,
+//                        onValueChange = {
+//                            location = it
+//                            userViewModel.saveCredentials(username, password, phone, location)
+//                        },
+//                        label = { Text(text = "Location", color = Color.Black) },
+//                        modifier = Modifier.padding(10.dp),
+//                        leadingIcon = {
+//                            Icon(
+//                                imageVector = Icons.Default.LocationOn,
+//                                contentDescription = "Location Icon",
+//                                tint = Color.Black
+//                            )
+//                        },
+//                        colors = TextFieldDefaults.outlinedTextFieldColors(
+//                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+//                            unfocusedBorderColor = Color.Black,
+//                            cursorColor = MaterialTheme.colorScheme.primary,
+//                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+//                        ),
+//                        textStyle = TextStyle(textColor)
+//
+//                    )
 
                     Column(
                         modifier = Modifier.fillMaxWidth(),
