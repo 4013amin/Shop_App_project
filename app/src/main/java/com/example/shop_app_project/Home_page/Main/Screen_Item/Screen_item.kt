@@ -1,7 +1,6 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.VectorConverter
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,11 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.shop_app_project.Home_page.Main.ProductItem
 import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
@@ -52,14 +47,16 @@ data class CategoryModel(
 
 data class prductmodelfack(
     val name: String,
-    val imageRes: Int,
+    val des: String,
+    val price: Int,
+    val image: Int
 )
 
 
 @ExperimentalMaterial3Api
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SearchPage(navController: NavController) {
+fun SearchPage(navController: NavController, shoppingCartViewModel: ShoppingCartViewModel) {
     SearchBar()
 
     Scaffold(
@@ -84,7 +81,8 @@ fun SearchPage(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryFilter()
                 Spacer(modifier = Modifier.height(16.dp))
-                ProductGrid()
+
+                ProductGrid(shoppingCartViewModel, navController)
             }
         }
     )
@@ -149,18 +147,19 @@ fun CategoryChip(category: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun ProductGrid() {
+fun ProductGrid(
+    cartViewModel: ShoppingCartViewModel,
+    navController: NavController
+) {
     val products = listOf(
-        prductmodelfack("Dog Food", R.drawable.tools),
-        prductmodelfack("Dog Treats", R.drawable.tools),
-        prductmodelfack("Dog Treatment", R.drawable.tools),
-        prductmodelfack("Dog Grooming", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Treats", R.drawable.tools)
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
     )
 
     LazyColumn(
@@ -174,7 +173,19 @@ fun ProductGrid() {
                 horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 rowItems.forEach { product ->
-                    ProductCard(product)
+                    ProductItem(
+                        name = product.name,
+                        description = product.description,
+                        price = product.price,
+                        image = product.image,
+                        addToCart = {
+//                            cartViewModel.addToCart(product)
+                        },
+                        onClick = {
+
+                            navController.navigate("singlePage")
+                        }
+                    )
                 }
             }
         }
@@ -204,7 +215,7 @@ fun ProductCard(product: prductmodelfack) {
                 .padding(13.dp)
         ) {
             Image(
-                painter = painterResource(id = product.imageRes),
+                painter = painterResource(id = product.image),
                 contentDescription = product.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

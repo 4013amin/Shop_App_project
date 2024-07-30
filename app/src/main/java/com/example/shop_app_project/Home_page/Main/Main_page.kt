@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -424,7 +422,7 @@ fun ProductItem(
     name: String,
     description: String,
     price: Int,
-    image: Int, // استفاده از Int برای منابع محلی
+    image: Int,
     addToCart: () -> Unit,
     onClick: () -> Unit,
 ) {

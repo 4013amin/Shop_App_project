@@ -116,7 +116,7 @@ fun NavGraph(
             UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
         }
         composable("search") {
-            SearchPage(navController = navController)
+            SearchPage(navController = navController, shoppingCartViewModel)
         }
         composable("profile") {
             ProfilePage()

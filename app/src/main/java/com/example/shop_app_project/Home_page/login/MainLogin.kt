@@ -120,7 +120,7 @@ fun bottomnavigations(
         }
         composable("search") {
             SearchPage(
-                navController = navController
+                navController = navController, shoppingCartViewModel
             )
         }
         composable("profile") { ProfilePage() }
