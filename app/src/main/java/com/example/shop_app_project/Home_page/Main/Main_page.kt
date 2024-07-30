@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -252,7 +250,7 @@ fun UiHomePage(
                             },
                             onClick = {
                                 val productJson = gson.toJson(product)
-                                navController.navigate("ProductDetailsPage?product=$productJson")
+                                navController.navigate("singlePage")
                             }
                         )
                     }
@@ -260,20 +258,20 @@ fun UiHomePage(
             }
 
 
-            // Categories
-            item {
-                LazyRow(
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    items(categories) { category ->
-                        CategoryItem(imageRes = category.imageRes, name = category.name)
-                    }
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(18.dp))
-            }
+//            // Categories
+//            item {
+//                LazyRow(
+//                    modifier = Modifier.padding(vertical = 8.dp)
+//                ) {
+//                    items(categories) { category ->
+//                        CategoryItem(imageRes = category.imageRes, name = category.name)
+//                    }
+//                }
+//            }
+//
+//            item {
+//                Spacer(modifier = Modifier.height(18.dp))
+//            }
 
 
             //DogProduct
@@ -299,9 +297,10 @@ fun UiHomePage(
                             description = product.description,
                             price = product.price,
                             image = product.image,
-                            addToCart = { /*TODO*/ }) {
+                            addToCart = {}, onClick = {
+                                navController.navigate("singlePage")
+                            })
 
-                        }
                     }
                 }
             }
@@ -423,7 +422,7 @@ fun ProductItem(
     name: String,
     description: String,
     price: Int,
-    image: Int, // استفاده از Int برای منابع محلی
+    image: Int,
     addToCart: () -> Unit,
     onClick: () -> Unit,
 ) {

@@ -77,7 +77,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             val response = try {
                 val user = login_model(
                     username = username,
-                    address = address,
+                    address = address, "", "", "", "",
                 )
                 Utils_ret.api.loginUser(user)
             } catch (e: IOException) {

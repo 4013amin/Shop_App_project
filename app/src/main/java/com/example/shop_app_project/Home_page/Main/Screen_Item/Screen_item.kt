@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -33,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.example.shop_app_project.Home_page.Main.ProductItem
 import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
@@ -47,14 +47,16 @@ data class CategoryModel(
 
 data class prductmodelfack(
     val name: String,
-    val imageRes: Int,
+    val des: String,
+    val price: Int,
+    val image: Int
 )
 
 
 @ExperimentalMaterial3Api
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SearchPage(navController: NavController) {
+fun SearchPage(navController: NavController, shoppingCartViewModel: ShoppingCartViewModel) {
     SearchBar()
 
     Scaffold(
@@ -79,7 +81,8 @@ fun SearchPage(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryFilter()
                 Spacer(modifier = Modifier.height(16.dp))
-                ProductGrid()
+
+                ProductGrid(shoppingCartViewModel, navController)
             }
         }
     )
@@ -144,18 +147,19 @@ fun CategoryChip(category: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun ProductGrid() {
+fun ProductGrid(
+    cartViewModel: ShoppingCartViewModel,
+    navController: NavController
+) {
     val products = listOf(
-        prductmodelfack("Dog Food", R.drawable.tools),
-        prductmodelfack("Dog Treats", R.drawable.tools),
-        prductmodelfack("Dog Treatment", R.drawable.tools),
-        prductmodelfack("Dog Grooming", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Food", R.drawable.tools),
-        prductmodelfack("Cat Treats", R.drawable.tools)
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
     )
 
     LazyColumn(
@@ -169,7 +173,19 @@ fun ProductGrid() {
                 horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 rowItems.forEach { product ->
-                    ProductCard(product)
+                    ProductItem(
+                        name = product.name,
+                        description = product.description,
+                        price = product.price,
+                        image = product.image,
+                        addToCart = {
+//                            cartViewModel.addToCart(product)
+                        },
+                        onClick = {
+
+                            navController.navigate("singlePage")
+                        }
+                    )
                 }
             }
         }
@@ -199,7 +215,7 @@ fun ProductCard(product: prductmodelfack) {
                 .padding(13.dp)
         ) {
             Image(
-                painter = painterResource(id = product.imageRes),
+                painter = painterResource(id = product.image),
                 contentDescription = product.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -217,38 +233,63 @@ fun ProductCard(product: prductmodelfack) {
 }
 
 @Composable
-fun CartPage(cartViewModel: ShoppingCartViewModel = viewModel()) {
+fun CartPage(cartViewModel: ShoppingCartViewModel) {
     val cartItems by cartViewModel.cartItems.collectAsState()
+    val textColor = Color(0xFFFFB004)
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Cart Page",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF388E3C)
-        )
 
+        if (cartItems.isEmpty()) {
+            EmptyCartAnimation()
 
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(cartItems) { product ->
-                CartItem(
-                    product = product,
-                    onRemove = { cartViewModel.removeFromCart(product) }
-                )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp)
+            ) {
+                items(cartItems) { product ->
+                    CartItem(
+                        product = product,
+                        onRemove = { cartViewModel.removeFromCart(product) }
+                    )
+                }
             }
-        }
 
-        Button(
-            onClick = { cartViewModel.clearCart() },
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text(text = "Clear Cart")
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+                    .background(Color.White)
+            ) {
+                Button(
+                    onClick = { cartViewModel.clearCart() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE0F7FA),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = "Clear Cart")
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = { cartViewModel.clearCart() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFFB004),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = "The Payment")
+                }
+            }
         }
     }
 }
@@ -262,7 +303,7 @@ fun CartItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(Color.LightGray)
+            .background(Color(0xFFFFB004))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -271,8 +312,7 @@ fun CartItem(
             contentDescription = null,
             modifier = Modifier
                 .size(64.dp)
-                .clip(CircleShape)
-                .background(Color.Gray),
+                .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
 
@@ -282,18 +322,54 @@ fun CartItem(
             modifier = Modifier
                 .weight(1f)
         ) {
-            Text(text = product.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(text = product.description, fontSize = 14.sp, color = Color.Gray, maxLines = 1)
+            Text(
+                text = product.name,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFE0F7FA)
+            )
+            Text(text = product.description, fontSize = 14.sp, color = Color.Black, maxLines = 1)
             Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
         }
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Button(onClick = onRemove) {
-            Text(text = "Remove")
+        Button(
+            onClick = onRemove,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFE0F7FA),
+                contentColor = Color.Black
+            )
+        ) {
+            Text(text = "Remove", color = Color.Black)
         }
     }
 }
+
+@Composable
+fun EmptyCartAnimation() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .clip(RoundedCornerShape(0.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.cartcat),
+            contentDescription = "Empty Cart",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun showImage() {
+    EmptyCartAnimation()
+}
+
 
 @Composable
 fun ProfilePage() {
@@ -313,8 +389,11 @@ fun ProfilePage() {
 fun ProductDetailsPage(
     navController: NavController,
 ) {
-    // State to track whether the product details are expanded
+
     var isExpanded by remember { mutableStateOf(false) }
+    var counter by remember {
+        mutableStateOf(1)
+    }
     val product = ProductModel(
         name = "Symply Dog Adult Chicken With Rice & Vegetables",
         description = "High-quality dog food with chicken, rice, and vegetables.",
@@ -349,12 +428,12 @@ fun ProductDetailsPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Quantity Selector
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            IconButton(onClick = { /* Decrease quantity logic */ }) {
+            IconButton(onClick = { if (counter > 1) counter -= 1 }) {
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Decrease quantity",
@@ -362,12 +441,12 @@ fun ProductDetailsPage(
                 )
             }
             Text(
-                text = "1",
+                text = "$counter",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            IconButton(onClick = { /* Increase quantity logic */ }) {
+            IconButton(onClick = { counter += 1 }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Increase quantity",
@@ -378,7 +457,7 @@ fun ProductDetailsPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Repeat Order Button
+
         Button(
             onClick = { /* Handle repeat order logic */ },
             modifier = Modifier.fillMaxWidth(),
@@ -390,7 +469,7 @@ fun ProductDetailsPage(
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { isExpanded = !isExpanded }, // Toggle the expanded state
+            onClick = { isExpanded = !isExpanded },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0F7FA))
         ) {
@@ -412,7 +491,7 @@ fun ProductDetailsPage(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Additional product details
+
             Text(
                 text = "This is additional product detail information that is displayed when the section is expanded.",
                 fontSize = 14.sp,
@@ -422,7 +501,6 @@ fun ProductDetailsPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Add to Cart Button
         Button(
             onClick = { /* Handle add to cart logic */ },
             modifier = Modifier.fillMaxWidth(),
@@ -439,12 +517,3 @@ data class ProductModel(
     val price: Int,
     val image: Int,
 )
-
-//@Preview(showBackground = true)
-//@Composable
-//private fun showsingle() {
-//
-//    val navController = rememberNavController()
-//
-//    ProductDetailsPage(navController)
-//}

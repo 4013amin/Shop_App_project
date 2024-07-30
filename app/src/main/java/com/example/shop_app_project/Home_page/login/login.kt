@@ -4,7 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +44,8 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf(savedCredentials.first) }
     var password by remember { mutableStateOf(savedCredentials.second) }
     var isLoggedIn by remember { mutableStateOf(userViewModel.checkCredentials()) }
+
+    val textColor = Color(0xFFFFB004)
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
@@ -114,53 +119,48 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
                             password = it
                             userViewModel.saveCredentials(username, password, "", "")
                         },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
                         label = { Text(text = "Password", color = Color.Black) },
                         modifier = Modifier.padding(10.dp),
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Person,
+                                imageVector = Icons.Default.Lock,
                                 contentDescription = "Password Icon",
                                 tint = Color.Black
                             )
                         },
-                        colors = outlinedTextFieldColors(
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = Color.Black,
                             cursorColor = MaterialTheme.colorScheme.primary,
                             focusedLabelColor = MaterialTheme.colorScheme.primary,
                         ),
-                        textStyle = androidx.compose.ui.text.TextStyle(color = Color.Black)
+                        textStyle = TextStyle(textColor)
+
                     )
                 }
-            }
-            Button(
-                onClick = { navController.navigate("home") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color(0xFFFFB004)),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color.Black
-                )
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Login Icon",
-                        tint = Color.Black
+                Button(
+                    onClick = { navController.navigate("home") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = Color(0xFFFFB004)),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.Black
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Login", color = Color.Black)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Login Icon",
+                            tint = Color.Black
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Login", color = Color.Black)
+                    }
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun showLogin() {
-    val navController = rememberNavController()
-    var userViewModel: UserViewModel = viewModel()
-    LoginScreen(navController = navController, userViewModel = userViewModel)
 }
 
