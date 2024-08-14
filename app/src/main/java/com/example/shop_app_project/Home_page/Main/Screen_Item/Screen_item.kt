@@ -4,13 +4,18 @@ import android.annotation.SuppressLint
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -25,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,31 +63,24 @@ data class prductmodelfack(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SearchPage(navController: NavController, shoppingCartViewModel: ShoppingCartViewModel) {
-    SearchBar()
-
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Explore Categories") },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color.Black
-                )
-            )
-        },
         content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFFFF3E0))
+                    .background(Color(0xFFFFFFFF))
                     .padding(16.dp)
             ) {
-                Spacer(modifier = Modifier.height(50.dp))
-                SearchBar()
-                Spacer(modifier = Modifier.height(16.dp))
-                CategoryFilter()
-                Spacer(modifier = Modifier.height(16.dp))
+                // SearchBar placed at the top
+                SearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
 
+                // Content below the SearchBar
+//                CategoryFilter()
+                Spacer(modifier = Modifier.height(16.dp))
                 ProductGrid(shoppingCartViewModel, navController)
             }
         }
@@ -90,7 +89,7 @@ fun SearchPage(navController: NavController, shoppingCartViewModel: ShoppingCart
 
 @ExperimentalMaterial3Api
 @Composable
-fun SearchBar() {
+fun SearchBar(modifier: Modifier) {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     TextField(
         value = searchQuery,
@@ -115,38 +114,6 @@ fun SearchBar() {
 
 
 @Composable
-fun CategoryFilter() {
-    val categories = listOf("All", "Dog", "Cat", "Small Animal", "Bird")
-    var selectedCategory by remember { mutableStateOf("All") }
-
-    LazyRow(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(categories) { category ->
-            CategoryChip(
-                category = category,
-                isSelected = selectedCategory == category,
-                onClick = { selectedCategory = category }
-            )
-        }
-    }
-}
-
-@Composable
-fun CategoryChip(category: String, isSelected: Boolean, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .padding(4.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(if (isSelected) Color(0xFFFFE0B2) else Color.White)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        Text(text = category, color = if (isSelected) Color.Black else Color.Gray)
-    }
-}
-
-@Composable
 fun ProductGrid(
     cartViewModel: ShoppingCartViewModel,
     navController: NavController
@@ -162,29 +129,127 @@ fun ProductGrid(
         ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
     )
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    // Create a grid layout with 2 columns
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(products.chunked(2)) { rowItems ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                rowItems.forEach { product ->
-                    ProductItem(
-                        name = product.name,
-                        description = product.description,
-                        price = product.price,
-                        image = product.image,
-                        addToCart = {
-//                            cartViewModel.addToCart(product)
-                        },
-                        onClick = {
+        items(products) { product ->
+            ProductItemSearchPage(
+                name = product.name,
+                description = product.description,
+                price = product.price,
+                image = product.image,
+                addToCart = {
+                    // Add to cart functionality
+                },
+                onClick = {
+                    navController.navigate("singlePage")
+                }
+            )
+        }
+    }
+}
 
-                            navController.navigate("singlePage")
-                        }
+
+@Composable
+fun ProductItemSearchPage(
+    name: String,
+    description: String,
+    price: Int,
+    image: Int,
+    addToCart: () -> Unit,
+    onClick: () -> Unit
+) {
+    var isSelected by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .width(300.dp)
+            .height(260.dp)
+            .padding(8.dp)
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .border(1.dp, Color(0xFFFFA500), RoundedCornerShape(8.dp)) // Orange border
+            .clickable(onClick = onClick)
+    ) {
+
+        Box {
+            Image(
+                painter = painterResource(id = image),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+
+            // Discount banner
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .background(Color(0xFFFFA500), RoundedCornerShape(4.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = "Discount : ${price}",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(8.dp)
+                .fillMaxWidth()
+        ) {
+
+            Text(
+                text = name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFCC9C99)
+            )
+
+            Text(
+                text = description,
+                fontSize = 12.sp,
+                color = Color(0xFFCC9C99),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = "$$price",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF388E3C)
+                )
+
+                IconButton(
+                    onClick = addToCart,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add to cart",
+                        tint = Color(0xFFFFA500)
                     )
                 }
             }
@@ -192,46 +257,8 @@ fun ProductGrid(
     }
 }
 
-@Composable
-fun ProductCard(product: prductmodelfack) {
-    val navController = rememberNavController()
-    val userViewModel: UserViewModel = viewModel()
-    val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
-    Box(
-        modifier = Modifier
-            .background(Color(0xFFE0F7FA))
-            .clip(shape = RoundedCornerShape(20.dp))
-            .padding(10.dp)
-            .clickable {
-                navController.navigate("singleProduct")
-            }
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-            modifier = Modifier
-                .background(Color(0xFFE0F7FA))
-                .padding(13.dp)
-        ) {
-            Image(
-                painter = painterResource(id = product.image),
-                contentDescription = product.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(10.dp))
-            )
-            Text(
-                text = product.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                maxLines = 1
-            )
-        }
-    }
-}
-
+//cardPage
 @Composable
 fun CartPage(cartViewModel: ShoppingCartViewModel) {
     val cartItems by cartViewModel.cartItems.collectAsState()
@@ -362,12 +389,6 @@ fun EmptyCartAnimation() {
             contentScale = ContentScale.Crop
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun showImage() {
-    EmptyCartAnimation()
 }
 
 

@@ -20,7 +20,7 @@
         android:theme="@style/Theme.Shop_App_project"
         tools:targetApi="31">
         <activity
-            android:name=".Home_page.login.MainLogin"
+            android:name=".Home_page.Main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Shop_App_project">
