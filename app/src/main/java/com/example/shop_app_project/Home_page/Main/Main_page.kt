@@ -1,5 +1,6 @@
 package com.example.shop_app_project.Home_page.Main
 
+import BottomNavigations
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -41,7 +42,6 @@ import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 import com.google.gson.Gson
 import com.google.accompanist.pager.*
-import com.google.accompanist.pager.indicators.* // Import for PagerIndicator
 
 val gson = Gson()
 
@@ -55,7 +55,10 @@ class MainActivity : ComponentActivity() {
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
                 UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
-                bottomnavigations(navController, userViewModel, shoppingCartViewModel)
+
+
+
+                BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }
     }
@@ -221,31 +224,13 @@ fun UiHomePage(
                                 cartViewModel.addToCart(product)
                             },
                             onClick = {
-                                navController.navigate("singlePage")
+                                navController.navigate("singleProduct")
                             }
                         )
                     }
                 }
             }
 
-//            item {
-//                Text(
-//                    text = "Browse Pet Types",
-//                    fontSize = 24.sp,
-//                    color = Color(0xFF2E1F09),
-//                    fontWeight = FontWeight.Bold,
-//                    modifier = Modifier.padding(vertical = 8.dp)
-//                )
-//            }
-
-//            // Animal Boxes
-//            item {
-//                AnimalBoxes()
-//            }
-//
-//            item {
-//                Spacer(modifier = Modifier.height(16.dp))
-//            }
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))

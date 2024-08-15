@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -410,11 +411,8 @@ fun ProfilePage() {
 fun ProductDetailsPage(
     navController: NavController,
 ) {
-
     var isExpanded by remember { mutableStateOf(false) }
-    var counter by remember {
-        mutableStateOf(1)
-    }
+    var counter by remember { mutableStateOf(1) }
     val product = ProductModel(
         name = "Symply Dog Adult Chicken With Rice & Vegetables",
         description = "High-quality dog food with chicken, rice, and vegetables.",
@@ -427,29 +425,63 @@ fun ProductDetailsPage(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Image(
-            painter = painterResource(id = product.image),
-            contentDescription = null,
+        // Container for the image and back button
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .align(Alignment.CenterHorizontally),
-            contentScale = ContentScale.Fit
-        )
+                .height(250.dp)
+        ) {
+            // Image
+            Image(
+                painter = painterResource(id = product.image),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+            // Back button
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp)
+                    .size(48.dp)
+                    .background(Color.White.copy(alpha = 0.7f), shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.Black
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = product.name, fontSize = 24.sp, color = Color.Black)
+
+        // Product details
+        Text(
+            text = product.name,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = product.description, fontSize = 16.sp, color = Color.Gray)
+        Text(
+            text = product.description,
+            fontSize = 16.sp,
+            color = Color.Gray
+        )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "£${product.price}",
             fontSize = 20.sp,
-            color = Color.Black,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-
+        // Quantity counter
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 8.dp)
@@ -478,7 +510,7 @@ fun ProductDetailsPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
+        // Repeat Order Button
         Button(
             onClick = { /* Handle repeat order logic */ },
             modifier = Modifier.fillMaxWidth(),
@@ -489,6 +521,7 @@ fun ProductDetailsPage(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Show/Hide Product Detail Button
         Button(
             onClick = { isExpanded = !isExpanded },
             modifier = Modifier.fillMaxWidth(),
@@ -496,7 +529,8 @@ fun ProductDetailsPage(
         ) {
             Text(
                 text = if (isExpanded) "Hide Product Detail" else "Show Product Detail",
-                color = Color.Black, fontWeight = FontWeight.Bold
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
             )
         }
 
@@ -507,11 +541,10 @@ fun ProductDetailsPage(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
             ) {
-                Text(text = "Composition")
+                Text(text = "Composition", color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
 
             Text(
                 text = "This is additional product detail information that is displayed when the section is expanded.",
@@ -521,6 +554,7 @@ fun ProductDetailsPage(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
 
         Button(
             onClick = { /* Handle add to cart logic */ },
@@ -538,3 +572,4 @@ data class ProductModel(
     val price: Int,
     val image: Int,
 )
+
