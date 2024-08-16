@@ -138,7 +138,7 @@ fun UiHomePage(
                         }
                     }
                 },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color(0xFFFEA500)) // Yellow background
+                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color(0xFFFEA500))
             )
         },
 
@@ -166,7 +166,7 @@ fun UiHomePage(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-
+            //Categories
             item {
                 Text(
                     text = "Categories",
@@ -177,7 +177,6 @@ fun UiHomePage(
                 )
             }
 
-            // Category Items
             item {
                 LazyRow(
                     modifier = Modifier
@@ -197,6 +196,8 @@ fun UiHomePage(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
+            // Trending Products
+
             item {
                 Text(
                     text = "Trending Now",
@@ -207,7 +208,6 @@ fun UiHomePage(
                 )
             }
 
-            // Trending Products
             item {
                 LazyRow(
                     modifier = Modifier
@@ -261,7 +261,7 @@ fun UiHomePage(
                             addToCart = {},
                             onClick = {
                                 val productJson = gson.toJson(product)
-                                navController.navigate("singlePage")
+                                navController.navigate("singleProduct")
                             }
                         )
                     }
@@ -296,7 +296,7 @@ fun UiHomePage(
                             image = product.image,
                             addToCart = {},
                             onClick = {
-                                navController.navigate("singlePage")
+                                navController.navigate("singleProduct")
                             }
                         )
                     }

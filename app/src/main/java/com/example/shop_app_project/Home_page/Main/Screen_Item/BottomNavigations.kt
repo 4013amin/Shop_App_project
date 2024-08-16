@@ -141,7 +141,6 @@ fun NavGraph(
             SearchPage(navController = navController, shoppingCartViewModel)
         }
 
-
         composable("singleProduct") {
             ProductDetailsPage(navController)
         }

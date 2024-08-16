@@ -8,14 +8,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -32,17 +33,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
-import com.example.shop_app_project.Home_page.Main.ProductItem
 import com.example.shop_app_project.R
-import com.example.shop_app_project.data.view_model.UserViewModel
 import com.google.gson.Gson
+import androidx.compose.foundation.pager.rememberPagerState
+
 
 var gson = Gson()
 
@@ -120,14 +118,62 @@ fun ProductGrid(
     navController: NavController
 ) {
     val products = listOf(
-        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
-        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
-        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
-        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
-        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
-        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
-        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
-        ProductModel("Dog Food", "wdadwd", 2500, R.drawable.tools),
+        ProductModel(
+            "Dog Food",
+            "wdadwd",
+            2500,
+            R.drawable.tools,
+            listOf(R.drawable.dog, R.drawable.dog, R.drawable.dog)
+        ),
+        ProductModel(
+            "Dog Food",
+            "wdadwd",
+            2500,
+            R.drawable.tools,
+            listOf(R.drawable.dog, R.drawable.dog, R.drawable.dog)
+        ),
+        ProductModel(
+            "Dog Food",
+            "wdadwd",
+            2500,
+            R.drawable.tools,
+            listOf(R.drawable.dog, R.drawable.dog, R.drawable.dog)
+        ),
+        ProductModel(
+            "Dog Food",
+            "wdadwd",
+            2500,
+            R.drawable.tools,
+            listOf(R.drawable.dog, R.drawable.dog, R.drawable.dog)
+        ),
+        ProductModel(
+            "Dog Food",
+            "wdadwd",
+            2500,
+            R.drawable.tools,
+            listOf(R.drawable.dog, R.drawable.dog, R.drawable.dog)
+        ),
+        ProductModel(
+            "Dog Food",
+            "wdadwd",
+            2500,
+            R.drawable.tools,
+            listOf(R.drawable.dog, R.drawable.dog, R.drawable.dog)
+        ),
+        ProductModel(
+            "Dog Food",
+            "wdadwd",
+            2500,
+            R.drawable.tools,
+            listOf(R.drawable.dog, R.drawable.dog, R.drawable.dog)
+        ),
+        ProductModel(
+            "Dog Food",
+            "wdadwd",
+            2500,
+            R.drawable.tools,
+            listOf(R.drawable.dog, R.drawable.dog, R.drawable.dog)
+        ),
     )
 
     // Create a grid layout with 2 columns
@@ -408,9 +454,7 @@ fun ProfilePage() {
 
 
 @Composable
-fun ProductDetailsPage(
-    navController: NavController,
-) {
+fun ProductDetailsPage(navController: NavController) {
     var isExpanded by remember { mutableStateOf(false) }
     var counter by remember { mutableStateOf(1) }
     val product = ProductModel(
@@ -418,6 +462,13 @@ fun ProductDetailsPage(
         description = "High-quality dog food with chicken, rice, and vegetables.",
         price = 199,
         image = R.drawable.dog,
+        additionalImages = listOf(
+            R.drawable.dog,
+            R.drawable.dog,
+            R.drawable.dog,
+            R.drawable.dog,
+            R.drawable.dog
+        ) // Example images
     )
 
     Column(
@@ -425,37 +476,34 @@ fun ProductDetailsPage(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Container for the image and back button
-        Box(
+        // Image Slider
+        val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
+
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
-        ) {
-            // Image
+        ) { page ->
             Image(
-                painter = painterResource(id = product.image),
-                contentDescription = null,
+                painter = painterResource(id = product.additionalImages[page]),
+                contentDescription = "Product Image",
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(8.dp)),
+                    .clip(MaterialTheme.shapes.medium),
                 contentScale = ContentScale.Crop
             )
-            // Back button
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(8.dp)
-                    .size(48.dp)
-                    .background(Color.White.copy(alpha = 0.7f), shape = CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Dot Pager Indicator
+        DotPagerIndicator(
+            pagerState = pagerState,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            activeColor = Color.Black,
+            inactiveColor = Color.Gray
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -555,7 +603,6 @@ fun ProductDetailsPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
         Button(
             onClick = { /* Handle add to cart logic */ },
             modifier = Modifier.fillMaxWidth(),
@@ -566,10 +613,34 @@ fun ProductDetailsPage(
     }
 }
 
+@Composable
+fun DotPagerIndicator(
+    pagerState: PagerState,
+    modifier: Modifier = Modifier,
+    activeColor: Color,
+    inactiveColor: Color
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        repeat(pagerState.pageCount) { index ->
+            val color = if (pagerState.currentPage == index) activeColor else inactiveColor
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(color, shape = RoundedCornerShape(50))
+                    .padding(2.dp)
+            )
+        }
+    }
+}
+
 data class ProductModel(
     val name: String,
     val description: String,
     val price: Int,
     val image: Int,
+    val additionalImages: List<Int>,
 )
 
