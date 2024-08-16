@@ -60,7 +60,7 @@ fun BottomNavigations(
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = Color(0xFFFEA500),
+                containerColor = Color(0xFFFFFFFF),
                 contentColor = Color.White
             ) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -107,10 +107,10 @@ fun BottomNavigations(
                             }
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color.White,
-                            unselectedIconColor = Color(0xFFFF5722),
-                            selectedTextColor = Color.White,
-                            unselectedTextColor = Color(0xFFFF5722)
+                            selectedIconColor = Color(0xFFFF5722),
+                            unselectedIconColor = Color.Black,
+                            selectedTextColor = Color(0xFFFF5722),
+                            unselectedTextColor = Color.Black
                         )
                     )
                 }

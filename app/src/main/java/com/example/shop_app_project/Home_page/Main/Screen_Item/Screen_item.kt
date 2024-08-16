@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -40,6 +41,7 @@ import coil.compose.rememberImagePainter
 import com.example.shop_app_project.R
 import com.google.gson.Gson
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 
 
 var gson = Gson()
@@ -67,7 +69,6 @@ fun SearchPage(navController: NavController, shoppingCartViewModel: ShoppingCart
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFFFFFFF))
                     .padding(16.dp)
             ) {
                 // SearchBar placed at the top
@@ -195,7 +196,7 @@ fun ProductGrid(
                     // Add to cart functionality
                 },
                 onClick = {
-                    navController.navigate("singlePage")
+                    navController.navigate("singleProduct")
                 }
             )
         }
@@ -455,49 +456,69 @@ fun ProfilePage() {
 
 @Composable
 fun ProductDetailsPage(navController: NavController) {
-    var isExpanded by remember { mutableStateOf(false) }
     var counter by remember { mutableStateOf(1) }
+    var scorller = rememberScrollState()
     val product = ProductModel(
         name = "Symply Dog Adult Chicken With Rice & Vegetables",
         description = "High-quality dog food with chicken, rice, and vegetables.",
         price = 199,
         image = R.drawable.dog,
         additionalImages = listOf(
+            R.drawable.register,
             R.drawable.dog,
+            R.drawable.register,
             R.drawable.dog,
-            R.drawable.dog,
-            R.drawable.dog,
-            R.drawable.dog
-        ) // Example images
+            R.drawable.register
+        )
     )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+
     ) {
-        // Image Slider
-        val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
 
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp)
-        ) { page ->
-            Image(
-                painter = painterResource(id = product.additionalImages[page]),
-                contentDescription = "Product Image",
+        Box(modifier = Modifier.fillMaxWidth()) {
+            val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
+
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(MaterialTheme.shapes.medium),
-                contentScale = ContentScale.Crop
-            )
-        }
+                    .fillMaxWidth()
+                    .height(400.dp)
+            ) { page ->
+                Image(
+                    painter = painterResource(id = product.additionalImages[page]),
+                    contentDescription = "Product Image",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(MaterialTheme.shapes.medium),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
 
+
+
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(Color.White, shape = CircleShape)
+                    .align(Alignment.TopStart)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.Black
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
         // Dot Pager Indicator
+        val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
         DotPagerIndicator(
             pagerState = pagerState,
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -507,29 +528,32 @@ fun ProductDetailsPage(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Product details
         Text(
             text = product.name,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = product.description,
             fontSize = 16.sp,
             color = Color.Gray
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = "£${product.price}",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Quantity counter
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(vertical = 8.dp)
@@ -558,57 +582,20 @@ fun ProductDetailsPage(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Repeat Order Button
         Button(
-            onClick = { /* Handle repeat order logic */ },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFE0B2))
-        ) {
-            Text(text = "Repeat Order")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Show/Hide Product Detail Button
-        Button(
-            onClick = { isExpanded = !isExpanded },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0F7FA))
+            onClick = { },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722)),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Text(
-                text = if (isExpanded) "Hide Product Detail" else "Show Product Detail",
-                color = Color.Black,
+                text = "ADD TO CART",
+                fontSize = 18.sp,
+                color = Color.White,
                 fontWeight = FontWeight.Bold
             )
-        }
-
-        if (isExpanded) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = { /* Handle composition logic */ },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-            ) {
-                Text(text = "Composition", color = Color.White)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "This is additional product detail information that is displayed when the section is expanded.",
-                fontSize = 14.sp,
-                color = Color.DarkGray
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { /* Handle add to cart logic */ },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF09BE10))
-        ) {
-            Text(text = "ADD TO CART", color = Color.White)
         }
     }
 }
