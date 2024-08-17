@@ -1,13 +1,21 @@
 package com.example.shop_app_project.Home_page.Main.Screen_Item
 
 import android.annotation.SuppressLint
-import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -16,15 +24,38 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.ModalBottomSheetValue.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,9 +70,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.shop_app_project.R
+import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.google.gson.Gson
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
+import kotlinx.coroutines.launch
 
 
 var gson = Gson()
@@ -307,62 +338,98 @@ fun ProductItemSearchPage(
 
 
 //cardPage
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun CartPage(cartViewModel: ShoppingCartViewModel) {
+fun CartPage(cartViewModel: ShoppingCartViewModel, navController: NavController) {
     val cartItems by cartViewModel.cartItems.collectAsState()
-    val textColor = Color(0xFFFFB004)
+    val coroutineScope = rememberCoroutineScope()
+    var selectedProduct by remember { mutableStateOf<com.example.shop_app_project.Home_page.Main.ProductModel?>(null) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+    // State to manage the visibility of the BottomSheet
+    val sheetState = rememberModalBottomSheetState(false)
+
+    ModalBottomSheetLayout(
+        sheetContent = {
+            selectedProduct?.let { product ->
+                ProductDetailsBottomSheet(product = product, onClose = {
+                    coroutineScope.launch {
+                        sheetState.hide() // Hide the bottom sheet
+                    }
+                })
+            }
+        }
     ) {
-
-        if (cartItems.isEmpty()) {
-            EmptyCartAnimation()
-
-        } else {
-            LazyColumn(
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Shopping Cart") },
+                    modifier = Modifier.background(Color.White),
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 80.dp)
-            ) {
-                items(cartItems) { product ->
-                    CartItem(
-                        product = product,
-                        onRemove = { cartViewModel.removeFromCart(product) }
-                    )
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
+                    .padding(paddingValues)
                     .background(Color.White)
             ) {
-                Button(
-                    onClick = { cartViewModel.clearCart() },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE0F7FA),
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Text(text = "Clear Cart")
-                }
+                if (cartItems.isEmpty()) {
+                    EmptyCartAnimation()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 80.dp)
+                    ) {
+                        items(cartItems) { product ->
+                            CartItem(
+                                product = product,
+                                onRemove = { cartViewModel.removeFromCart(product) },
+                                onClick = {
+                                    selectedProduct = product
+                                    coroutineScope.launch {
+                                        sheetState.show() // Show the bottom sheet
+                                    }
+                                }
+                            )
+                        }
+                    }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp)
+                            .background(Color.White)
+                    ) {
+                        Button(
+                            onClick = { cartViewModel.clearCart() },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFE0F7FA),
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Text(text = "Clear Cart")
+                        }
 
-                Button(
-                    onClick = { cartViewModel.clearCart() },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFFB004),
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Text(text = "The Payment")
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = { /* Add your payment logic here */ },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFFFB004),
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Text(text = "The Payment")
+                        }
+                    }
                 }
             }
         }
@@ -372,14 +439,16 @@ fun CartPage(cartViewModel: ShoppingCartViewModel) {
 @Composable
 fun CartItem(
     product: com.example.shop_app_project.Home_page.Main.ProductModel,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(Color(0xFFFFB004))
-            .padding(16.dp),
+            .background(Color.White)
+            .padding(16.dp)
+            .clickable { onClick() }, // Handle item click
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -401,9 +470,9 @@ fun CartItem(
                 text = product.name,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFE0F7FA)
+                color = Color(0xFFFFB004)
             )
-            Text(text = product.description, fontSize = 14.sp, color = Color.Black, maxLines = 1)
+            Text(text = product.description, fontSize = 14.sp, color = Color.Gray, maxLines = 1)
             Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
         }
 
@@ -420,6 +489,58 @@ fun CartItem(
         }
     }
 }
+
+@Composable
+fun ProductDetailsBottomSheet(
+    product: com.example.shop_app_project.Home_page.Main.ProductModel,
+    onClose: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = product.name,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = product.description,
+            fontSize = 16.sp,
+            color = Color.Gray
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "$${product.price}",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onClose,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFE0F7FA),
+                contentColor = Color.Black
+            )
+        ) {
+            Text(text = "Close", color = Color.Black)
+        }
+    }
+}
+
+
 
 @Composable
 fun EmptyCartAnimation() {
@@ -472,121 +593,131 @@ fun ProductDetailsPage(navController: NavController) {
         )
     )
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(scorller)
+                .padding(bottom = 80.dp)
+        ) {
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-            val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
+            Box(modifier = Modifier.fillMaxWidth()) {
+                val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
 
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp)
-            ) { page ->
-                Image(
-                    painter = painterResource(id = product.additionalImages[page]),
-                    contentDescription = "Product Image",
+                HorizontalPager(
+                    state = pagerState,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .clip(MaterialTheme.shapes.medium),
-                    contentScale = ContentScale.Crop
-                )
+                        .fillMaxWidth()
+                        .height(400.dp)
+                ) { page ->
+                    Image(
+                        painter = painterResource(id = product.additionalImages[page]),
+                        contentDescription = "Product Image",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(MaterialTheme.shapes.medium),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .background(Color.White, shape = CircleShape)
+                        .align(Alignment.TopStart)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-
-
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.White, shape = CircleShape)
-                    .align(Alignment.TopStart)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Black
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Dot Pager Indicator
-        val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
-        DotPagerIndicator(
-            pagerState = pagerState,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            activeColor = Color.Black,
-            inactiveColor = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = product.name,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = product.description,
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "£${product.price}",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
-            IconButton(onClick = { if (counter > 1) counter -= 1 }) {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "Decrease quantity",
-                    tint = Color(0xFFD20311)
-                )
-            }
-            Text(
-                text = "$counter",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+            val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
+            // Dot Pager Indicator
+            DotPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                activeColor = Color.Black,
+                inactiveColor = Color.Gray
             )
-            IconButton(onClick = { counter += 1 }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Increase quantity",
-                    tint = Color(0xFF00BF07)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(15.dp)
+            ) {
+
+                Text(
+                    text = product.name,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = product.description,
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "£${product.price}",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    IconButton(onClick = { if (counter > 1) counter -= 1 }) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Decrease quantity",
+                            tint = Color(0xFFD20311)
+                        )
+                    }
+                    Text(
+                        text = "$counter",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    IconButton(onClick = { counter += 1 }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Increase quantity",
+                            tint = Color(0xFF00BF07)
+                        )
+                    }
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
+        // دکمه ثابت "سبد خرید" در پایین صفحه
         Button(
             onClick = { },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp),
+                .height(60.dp)
+                .align(Alignment.BottomCenter), // این باعث می‌شود که دکمه در پایین صفحه ثابت بماند
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722)),
             shape = RoundedCornerShape(12.dp)
         ) {

@@ -128,7 +128,7 @@ fun bottomnavigations(
             ProductDetailsPage(navController)
         }
         composable("cart") {
-            CartPage(shoppingCartViewModel)
+            CartPage(shoppingCartViewModel, navController)
         }
 
     }

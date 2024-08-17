@@ -71,6 +71,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.google.accompanist:accompanist-pager:0.35.1-alpha")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.35.1-alpha")
+    implementation("androidx.compose.material:material:1.7.0-beta07")
     testImplementation("junit:junit:4.13.2")
 
     //Lottifiles
