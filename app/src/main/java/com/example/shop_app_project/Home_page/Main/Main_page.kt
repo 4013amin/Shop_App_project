@@ -8,7 +8,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.shop_app_project.Home_page.login.bottomnavigations
 import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
@@ -402,9 +399,7 @@ fun ProductItem(
     image: Int,
     addToCart: () -> Unit,
     onClick: () -> Unit,
-
-    ) {
-
+) {
     var isSelected by remember { mutableStateOf(false) }
 
     Box(
@@ -413,6 +408,11 @@ fun ProductItem(
             .height(280.dp)
             .padding(8.dp)
             .background(Color.White, RoundedCornerShape(8.dp))
+            .border(
+                width = 2.dp, // ضخامت بردر
+                color = Color(0xFFFFA500), // رنگ نارنجی برای بردر
+                shape = RoundedCornerShape(8.dp) // شکل گوشه‌های بردر
+            )
             .clickable(onClick = onClick)
     ) {
 
@@ -437,18 +437,16 @@ fun ProductItem(
                 text = name,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFCC9C99) // Pink color for text
+                color = Color(0xFFCC9C99) // رنگ صورتی برای متن
             )
-
 
             Text(
                 text = description,
                 fontSize = 12.sp,
-                color = Color(0xFFCC9C99), // Pink color for text
+                color = Color(0xFFCC9C99), // رنگ صورتی برای متن
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-
 
             Row(
                 modifier = Modifier
@@ -475,7 +473,6 @@ fun ProductItem(
                         contentDescription = "Add to cart",
                         tint = if (isSelected) Color(0xFF388E3C) else Color(0xFFFEA500)
                     )
-
                 }
             }
         }

@@ -28,10 +28,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.ModalBottomSheetValue.*
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -43,6 +40,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -73,6 +71,7 @@ import com.example.shop_app_project.R
 import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import androidx.compose.material3.*
 
 
 var gson = Gson()
@@ -338,98 +337,106 @@ fun ProductItemSearchPage(
 
 
 //cardPage
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartPage(cartViewModel: ShoppingCartViewModel, navController: NavController) {
     val cartItems by cartViewModel.cartItems.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-    var selectedProduct by remember { mutableStateOf<com.example.shop_app_project.Home_page.Main.ProductModel?>(null) }
+    val scope = rememberCoroutineScope()
+    var selectedProduct by remember {
+        mutableStateOf<com.example.shop_app_project.Home_page.Main.ProductModel?>(null)
+    }
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
 
-    // State to manage the visibility of the BottomSheet
-    val sheetState = rememberModalBottomSheetState(false)
-
-    ModalBottomSheetLayout(
-        sheetContent = {
-            selectedProduct?.let { product ->
-                ProductDetailsBottomSheet(product = product, onClose = {
-                    coroutineScope.launch {
-                        sheetState.hide() // Hide the bottom sheet
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Shopping Cart") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                })
+                }
+            )
+        },
+
+        ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            if (cartItems.isEmpty()) {
+                EmptyCartAnimation()
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 80.dp)
+                ) {
+                    items(cartItems) { product ->
+                        CartItem(
+                            product = product,
+                            onRemove = { cartViewModel.removeFromCart(product) },
+                            onClick = {
+                                selectedProduct = product
+                                showBottomSheet = true
+                            }
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp)
+                ) {
+
+                    Button(
+                        onClick = { cartViewModel.clearCart() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFFFB004)),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFFFFB004),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(text = "Clear Cart")
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Button(
+                        onClick = { },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFFFB004)),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFFFFB004),
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(text = "payment")
+                    }
+
+                }
             }
         }
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Shopping Cart") },
-                    modifier = Modifier.background(Color.White),
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(Color.White)
+
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = sheetState
             ) {
-                if (cartItems.isEmpty()) {
-                    EmptyCartAnimation()
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 80.dp)
-                    ) {
-                        items(cartItems) { product ->
-                            CartItem(
-                                product = product,
-                                onRemove = { cartViewModel.removeFromCart(product) },
-                                onClick = {
-                                    selectedProduct = product
-                                    coroutineScope.launch {
-                                        sheetState.show() // Show the bottom sheet
-                                    }
-                                }
-                            )
+                selectedProduct?.let { product ->
+                    ProductDetailsBottomSheet(product = product, onClose = {
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                showBottomSheet = false
+                            }
                         }
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(16.dp)
-                            .background(Color.White)
-                    ) {
-                        Button(
-                            onClick = { cartViewModel.clearCart() },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFE0F7FA),
-                                contentColor = Color.Black
-                            )
-                        ) {
-                            Text(text = "Clear Cart")
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Button(
-                            onClick = { /* Add your payment logic here */ },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFFFB004),
-                                contentColor = Color.Black
-                            )
-                        ) {
-                            Text(text = "The Payment")
-                        }
-                    }
+                    })
                 }
             }
         }
@@ -442,50 +449,54 @@ fun CartItem(
     onRemove: () -> Unit,
     onClick: () -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.White)
-            .padding(16.dp)
-            .clickable { onClick() }, // Handle item click
-        verticalAlignment = Alignment.CenterVertically
+            .padding(8.dp)  // Padding outside the box for spacing between items
+            .clip(RoundedCornerShape(8.dp))  // Clip to rounded corners
+            .background(Color.White)  // Set background color to white
+            .padding(15.dp)  // Padding inside the box
+            .clickable { onClick() }  // Handle item click
     ) {
-        Image(
-            painter = rememberImagePainter(data = product.image),
-            contentDescription = null,
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = product.name,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFFFB004)
+            Image(
+                painter = rememberImagePainter(data = product.image),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape),  // Make image circular
+                contentScale = ContentScale.Crop
             )
-            Text(text = product.description, fontSize = 14.sp, color = Color.Gray, maxLines = 1)
-            Text(text = "$${product.price}", fontSize = 16.sp, color = Color.Black)
-        }
 
-        Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-        Button(
-            onClick = onRemove,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFE0F7FA),
-                contentColor = Color.Black
-            )
-        ) {
-            Text(text = "Remove", color = Color.Black)
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = product.name,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFFFB004)
+                )
+                // Add more text fields if needed for other details
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Button(
+                onClick = onRemove,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFE0F7FA),
+                    contentColor = Color.Black
+                )
+            ) {
+                Text(text = "Remove", color = Color.Black)
+            }
         }
     }
 }
@@ -498,7 +509,6 @@ fun ProductDetailsBottomSheet(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
             .padding(16.dp)
     ) {
         Text(
@@ -541,7 +551,6 @@ fun ProductDetailsBottomSheet(
 }
 
 
-
 @Composable
 fun EmptyCartAnimation() {
     Box(
@@ -552,7 +561,7 @@ fun EmptyCartAnimation() {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.cartcat),
+            painter = painterResource(id = R.drawable.emptycat),
             contentDescription = "Empty Cart",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -605,7 +614,8 @@ fun ProductDetailsPage(navController: NavController) {
         ) {
 
             Box(modifier = Modifier.fillMaxWidth()) {
-                val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
+                val pagerState =
+                    rememberPagerState(pageCount = { product.additionalImages.size })
 
                 HorizontalPager(
                     state = pagerState,
@@ -641,7 +651,7 @@ fun ProductDetailsPage(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
-            // Dot Pager Indicator
+
             DotPagerIndicator(
                 pagerState = pagerState,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -711,13 +721,13 @@ fun ProductDetailsPage(navController: NavController) {
                 }
             }
         }
-        // دکمه ثابت "سبد خرید" در پایین صفحه
+
         Button(
             onClick = { },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp)
-                .align(Alignment.BottomCenter), // این باعث می‌شود که دکمه در پایین صفحه ثابت بماند
+                .align(Alignment.BottomCenter),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722)),
             shape = RoundedCornerShape(12.dp)
         ) {
