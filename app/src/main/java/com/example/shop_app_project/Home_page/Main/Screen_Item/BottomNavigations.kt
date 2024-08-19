@@ -52,64 +52,88 @@ fun BottomNavigations(
 ) {
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFFFFFFFF),
-                contentColor = Color.White
-            ) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
-                val cartItems by shoppingCartViewModel.cartItems.collectAsState()
+            Box(modifier = Modifier.fillMaxWidth()) {
+                NavigationBar(
+                    containerColor = Color(0xFFF8F8F8),
+                    contentColor = Color.White,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    tonalElevation = 8.dp
+                ) {
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+                    val cartItems by shoppingCartViewModel.cartItems.collectAsState()
 
-                navItems.forEach { item ->
-                    NavigationBarItem(
-                        icon = {
-                            Box(
-                                modifier = if (item.route == "search") {
-                                    Modifier.offset(y = (-0).dp)
-                                } else {
-                                    Modifier
-                                }
-                            ) {
-                                if (item.route == "cart") {
-                                    BadgedBox(badge = {
-                                        if (cartItems.isNotEmpty()) {
-                                            Badge {
-                                                Text(text = cartItems.size.toString())
+                    navItems.filter { it.route != "search" }.forEach { item ->
+                        NavigationBarItem(
+                            icon = {
+                                Box {
+                                    if (item.route == "cart") {
+                                        BadgedBox(badge = {
+                                            if (cartItems.isNotEmpty()) {
+                                                Badge {
+                                                    Text(text = cartItems.size.toString())
+                                                }
                                             }
+                                        }) {
+                                            Icon(
+                                                imageVector = item.icon,
+                                                contentDescription = item.title,
+                                                modifier = Modifier.size(28.dp)
+                                            )
                                         }
-                                    }) {
+                                    } else {
                                         Icon(
                                             imageVector = item.icon,
                                             contentDescription = item.title,
-                                            modifier = Modifier.size(28.dp)
+                                            modifier = Modifier.size(24.dp)
                                         )
                                     }
-                                } else {
-                                    Icon(
-                                        imageVector = item.icon,
-                                        contentDescription = item.title,
-                                        modifier = Modifier.size(24.dp)
-                                    )
                                 }
-                            }
-                        },
-                        label = { Text(item.title) },
-                        selected = currentRoute == item.route,
-                        onClick = {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                            },
+                            label = { Text(item.title) },
+                            selected = currentRoute == item.route,
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color(0xFFFF5722),
-                            unselectedIconColor = Color.Black,
-                            selectedTextColor = Color(0xFFFF5722),
-                            unselectedTextColor = Color.Black
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color(0xFFFF5722),
+                                unselectedIconColor = Color.Gray,
+                                selectedTextColor = Color(0xFFFF5722),
+                                unselectedTextColor = Color.Gray
+                            )
                         )
+                    }
+                }
+
+                // دکمه شناور برای جستجو
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate("search") {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    shape = CircleShape,
+                    containerColor = Color(0xFFFF5722),
+                    contentColor = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .offset(y = (-30).dp)
+                        .size(60.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Paw Button",
+                        modifier = Modifier.size(30.dp)
                     )
                 }
             }
@@ -122,7 +146,6 @@ fun BottomNavigations(
         )
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,7 +161,6 @@ fun NavGraph(
         composable("search") {
             SearchPage(navController = navController, shoppingCartViewModel)
         }
-
         composable("singleProduct") {
             ProductDetailsPage(navController)
         }
