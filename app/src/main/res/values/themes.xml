@@ -4,7 +4,7 @@
         <!-- رنگ پس‌زمینه اسپلش -->
         <item name="windowSplashScreenBackground">@color/bg_splash</item>
         <!-- آیکون انیمیشن اسپلش -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/baseline_add_reaction_24</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/baseline_pets_24</item>
         <!-- تمی که بعد از اسپلش نمایش داده می‌شود -->
         <item name="postSplashScreenTheme">@style/Theme.Shop_App_project</item>
     </style>
