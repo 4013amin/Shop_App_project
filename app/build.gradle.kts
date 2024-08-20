@@ -73,6 +73,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager-indicators:0.35.1-alpha")
     implementation("androidx.compose.material:material:1.7.0-beta07")
     implementation("androidx.core:core-splashscreen:1.2.0-alpha01")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
 
     //Lottifiles

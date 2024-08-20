@@ -15,14 +15,18 @@ object SharedPreferencesManager {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    fun saveCartItems(context: Context, cartItems: List<com.example.shop_app_project.Home_page.Main.ProductModel>) {
+    fun saveCartItems(
+        context: Context,
+        cartItems: List<com.example.shop_app_project.Home_page.Main.ProductModel>
+    ) {
         val json = Gson().toJson(cartItems)
         getPreferences(context).edit().putString(CART_KEY, json).apply()
     }
 
     fun loadCartItems(context: Context): List<com.example.shop_app_project.Home_page.Main.ProductModel> {
         val json = getPreferences(context).getString(CART_KEY, null) ?: return emptyList()
-        val type = object : TypeToken<List<com.example.shop_app_project.Home_page.Main.ProductModel>>() {}.type
+        val type = object :
+            TypeToken<List<com.example.shop_app_project.Home_page.Main.ProductModel>>() {}.type
         return Gson().fromJson(json, type)
     }
 
