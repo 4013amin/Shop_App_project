@@ -102,16 +102,15 @@ fun BottomNavigations(
                                 }
                             },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Color(0xFFFF5722),
+                                selectedIconColor = Color(0xFFFE5B52),
                                 unselectedIconColor = Color.Gray,
-                                selectedTextColor = Color(0xFFFF5722),
+                                selectedTextColor = Color(0xFFFE5B52),
                                 unselectedTextColor = Color.Gray
                             )
                         )
                     }
                 }
 
-                // دکمه شناور برای جستجو
                 FloatingActionButton(
                     onClick = {
                         navController.navigate("search") {
@@ -123,7 +122,7 @@ fun BottomNavigations(
                         }
                     },
                     shape = CircleShape,
-                    containerColor = Color(0xFFFF5722),
+                    containerColor = Color(0xFFFE5B52),
                     contentColor = Color.White,
                     modifier = Modifier
                         .align(Alignment.TopCenter)
