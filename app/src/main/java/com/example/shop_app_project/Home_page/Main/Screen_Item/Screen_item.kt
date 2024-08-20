@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -585,10 +586,10 @@ fun ProfilePage() {
 
 
 @Composable
-fun ProductDetailsPage(navController: NavController) {
+fun ProductDetailsPage(navController: NavController, cartViewModel: ShoppingCartViewModel) {
     var counter by remember { mutableStateOf(1) }
     var scorller = rememberScrollState()
-    val product = ProductModel(
+    val products = ProductModel(
         name = "Symply Dog Adult Chicken With Rice & Vegetables",
         description = "High-quality dog food with chicken, rice, and vegetables.",
         price = 199,
@@ -615,7 +616,7 @@ fun ProductDetailsPage(navController: NavController) {
 
             Box(modifier = Modifier.fillMaxWidth()) {
                 val pagerState =
-                    rememberPagerState(pageCount = { product.additionalImages.size })
+                    rememberPagerState(pageCount = { products.additionalImages.size })
 
                 HorizontalPager(
                     state = pagerState,
@@ -624,7 +625,7 @@ fun ProductDetailsPage(navController: NavController) {
                         .height(400.dp)
                 ) { page ->
                     Image(
-                        painter = painterResource(id = product.additionalImages[page]),
+                        painter = painterResource(id = products.additionalImages[page]),
                         contentDescription = "Product Image",
                         modifier = Modifier
                             .fillMaxSize()
@@ -650,7 +651,7 @@ fun ProductDetailsPage(navController: NavController) {
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            val pagerState = rememberPagerState(pageCount = { product.additionalImages.size })
+            val pagerState = rememberPagerState(pageCount = { products.additionalImages.size })
 
             DotPagerIndicator(
                 pagerState = pagerState,
@@ -669,7 +670,7 @@ fun ProductDetailsPage(navController: NavController) {
             ) {
 
                 Text(
-                    text = product.name,
+                    text = products.name,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -678,7 +679,7 @@ fun ProductDetailsPage(navController: NavController) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = product.description,
+                    text = products.description,
                     fontSize = 16.sp,
                     color = Color.Gray
                 )
@@ -686,7 +687,7 @@ fun ProductDetailsPage(navController: NavController) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "£${product.price}",
+                    text = "£${products.price}",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -718,26 +719,25 @@ fun ProductDetailsPage(navController: NavController) {
                             tint = Color(0xFF00BF07)
                         )
                     }
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    IconButton(
+                        onClick = {      },
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .clip(CircleShape)
+                            .background(color = Color(0xFFFE5B52))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
                 }
             }
         }
 
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .align(Alignment.BottomCenter),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722)),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = "ADD TO CART",
-                fontSize = 18.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
     }
 }
 

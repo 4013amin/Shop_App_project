@@ -82,7 +82,6 @@ fun UiHomePage(
 ) {
     val cartItems by cartViewModel.cartItems.collectAsState()
 
-    // Data
     val categories = listOf(
         CategoryModel("Cat", R.drawable.cat),
         CategoryModel("Dog", R.drawable.dog),
