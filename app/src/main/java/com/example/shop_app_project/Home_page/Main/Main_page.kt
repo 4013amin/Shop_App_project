@@ -89,8 +89,8 @@ fun UiHomePage(
     )
 
     val products = listOf(
-        ProductModel("Dog Food", "High-quality dog food", 50, R.drawable.tools),
-        ProductModel("Cat Toy", "Fun toy for cats", 20, R.drawable.cat_image),
+        ProductModel("Dog Food", "High-quality dog food", 50, R.drawable.shoptools),
+        ProductModel("Cat Toy", "Fun toy for cats", 20, R.drawable.shoptools2),
         ProductModel("Bird Cage", "Spacious bird cage", 150, R.drawable.tools),
         ProductModel("Fish Tank", "Large fish tank", 100, R.drawable.cat_image),
         ProductModel("Rabbit Hutch", "Comfortable hutch for rabbits", 120, R.drawable.tools)
@@ -151,9 +151,9 @@ fun UiHomePage(
             item {
                 ImageSlider(
                     images = listOf(
-                        R.drawable.image_slider,
-                        R.drawable.image_slider,
-                        R.drawable.image_slider
+                        R.drawable.slaider1,
+                        R.drawable.slider2,
+                        R.drawable.slider3
                     )
                 )
             }
@@ -254,7 +254,7 @@ fun UiHomePage(
                             description = product.description,
                             price = product.price,
                             image = product.image,
-                            addToCart = {},
+                            addToCart = { cartViewModel.addToCart(product) },
                             onClick = {
                                 val productJson = gson.toJson(product)
                                 navController.navigate("singleProduct")
@@ -290,7 +290,7 @@ fun UiHomePage(
                             description = product.description,
                             price = product.price,
                             image = product.image,
-                            addToCart = {},
+                            addToCart = { cartViewModel.addToCart(product) },
                             onClick = {
                                 navController.navigate("singleProduct")
                             }

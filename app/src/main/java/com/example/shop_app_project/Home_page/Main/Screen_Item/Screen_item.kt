@@ -595,11 +595,11 @@ fun ProductDetailsPage(navController: NavController, cartViewModel: ShoppingCart
         price = 199,
         image = R.drawable.dog,
         additionalImages = listOf(
-            R.drawable.register,
-            R.drawable.dog,
-            R.drawable.register,
-            R.drawable.dog,
-            R.drawable.register
+            R.drawable.shoptools2,
+            R.drawable.shoptools,
+            R.drawable.shoptools2,
+            R.drawable.shoptools,
+            R.drawable.shoptools2
         )
     )
 
@@ -722,7 +722,7 @@ fun ProductDetailsPage(navController: NavController, cartViewModel: ShoppingCart
                     Spacer(modifier = Modifier.weight(1f))
 
                     IconButton(
-                        onClick = {      },
+                        onClick = { },
                         modifier = Modifier
                             .padding(16.dp)
                             .clip(CircleShape)
