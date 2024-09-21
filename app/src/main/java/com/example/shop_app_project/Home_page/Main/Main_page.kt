@@ -6,36 +6,31 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -44,26 +39,22 @@ import com.example.shop_app_project.data.view_model.ShoppingCartViewModel
 import com.example.shop_app_project.data.view_model.UserViewModel
 import com.example.shop_app_project.ui.theme.Shop_App_projectTheme
 import com.google.gson.Gson
+import com.google.accompanist.pager.*
 
 val gson = Gson()
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContent {
             Shop_App_projectTheme {
                 val navController = rememberNavController()
                 val userViewModel: UserViewModel = viewModel()
                 val shoppingCartViewModel: ShoppingCartViewModel = viewModel()
 
-
-//                SetupNavGraph(
-//                    navController = navController,
-//                    userViewModel = userViewModel,
-//                    shoppingCartViewModel = shoppingCartViewModel
-//                )
-
                 UiHomePage(cartViewModel = shoppingCartViewModel, navController = navController)
+
                 BottomNavigations(navController, userViewModel, shoppingCartViewModel)
             }
         }
@@ -89,20 +80,17 @@ fun UiHomePage(
     cartViewModel: ShoppingCartViewModel,
     navController: NavController,
 ) {
-
     val cartItems by cartViewModel.cartItems.collectAsState()
-
 
     val categories = listOf(
         CategoryModel("Cat", R.drawable.cat),
         CategoryModel("Dog", R.drawable.dog),
-        CategoryModel("Test", R.drawable.logo),
-        // add more categories as needed
+        CategoryModel("Test", R.drawable.logo)
     )
 
     val products = listOf(
-        ProductModel("Dog Food", "High-quality dog food", 50, R.drawable.tools),
-        ProductModel("Cat Toy", "Fun toy for cats", 20, R.drawable.cat_image),
+        ProductModel("Dog Food", "High-quality dog food", 50, R.drawable.shoptools),
+        ProductModel("Cat Toy", "Fun toy for cats", 20, R.drawable.shoptools2),
         ProductModel("Bird Cage", "Spacious bird cage", 150, R.drawable.tools),
         ProductModel("Fish Tank", "Large fish tank", 100, R.drawable.cat_image),
         ProductModel("Rabbit Hutch", "Comfortable hutch for rabbits", 120, R.drawable.tools)
@@ -111,12 +99,16 @@ fun UiHomePage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Pet Store") },
+                title = { Text(text = "Pet Store", color = Color.Black) },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.navigate("search")
                     }) {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Explore")
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = Color.Black
+                        )
                     }
                 },
                 actions = {
@@ -124,7 +116,6 @@ fun UiHomePage(
                         navController.navigate("cart")
                     }) {
                         BadgedBox(badge = {
-                            val cartItems by cartViewModel.cartItems.collectAsState()
                             if (cartItems.isNotEmpty()) {
                                 Badge(
                                     containerColor = Color.Transparent,
@@ -137,18 +128,20 @@ fun UiHomePage(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.ShoppingCart,
-                                contentDescription = "Cart"
+                                contentDescription = "Cart",
+                                tint = Color.Black
                             )
                         }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color(0xFFFEA500))
             )
-        }
-    ) { innerPadding ->
+        },
+
+        ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
                 .padding(innerPadding)
                 .padding(16.dp),
             horizontalAlignment = Alignment.Start
@@ -158,32 +151,64 @@ fun UiHomePage(
             item {
                 ImageSlider(
                     images = listOf(
-                        R.drawable.image_slider
+                        R.drawable.slaider1,
+                        R.drawable.slider2,
+                        R.drawable.slider3
                     )
                 )
             }
 
             item {
-                Spacer(modifier = Modifier.height(25.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-
+            //Categories
             item {
                 Text(
-                    text = "Trending now",
-                    fontSize = 30.sp,
-                    color = Color(0xFFCD8822),
+                    text = "Categories",
+                    fontSize = 18.sp,
+                    color = Color(0xFF2E1F09),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
 
-            // TrendProduct
             item {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(vertical = 8.dp)
+                ) {
+                    items(categories) { category ->
+                        CategoryItem(
+                            imageRes = category.imageRes,
+                            name = category.name
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Trending Products
+
+            item {
+                Text(
+                    text = "Trending Now",
+                    fontSize = 18.sp,
+                    color = Color(0xFF2E1F09),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
+            item {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 ) {
                     items(products) { product ->
                         ProductItem(
@@ -195,8 +220,7 @@ fun UiHomePage(
                                 cartViewModel.addToCart(product)
                             },
                             onClick = {
-
-                                navController.navigate("singlePage")
+                                navController.navigate("singleProduct")
                             }
                         )
                     }
@@ -204,32 +228,15 @@ fun UiHomePage(
             }
 
 
-            //CatProduct
             item {
-                Text(
-                    text = "Browse pet types",
-                    fontSize = 30.sp,
-                    color = Color(0xFFCD8822),
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                Spacer(modifier = Modifier.height(16.dp))
             }
-
-            // Animal Boxes
-            item {
-                AnimalBoxes()
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(18.dp))
-            }
-
 
             item {
                 Text(
-                    text = "Products For you",
-                    fontSize = 30.sp,
-                    color = Color(0xFFCD8822),
+                    text = "Products For You",
+                    fontSize = 18.sp,
+                    color = Color(0xFF2E1F09),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -241,47 +248,31 @@ fun UiHomePage(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
-
                     items(products) { product ->
                         ProductItem(
                             name = product.name,
                             description = product.description,
                             price = product.price,
                             image = product.image,
-                            addToCart = {
-                            },
+                            addToCart = { cartViewModel.addToCart(product) },
                             onClick = {
                                 val productJson = gson.toJson(product)
-                                navController.navigate("ProductDetailsPage?product=$productJson")
+                                navController.navigate("singleProduct")
                             }
                         )
                     }
                 }
             }
 
-
-            // Categories
             item {
-                LazyRow(
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    items(categories) { category ->
-                        CategoryItem(imageRes = category.imageRes, name = category.name)
-                    }
-                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            item {
-                Spacer(modifier = Modifier.height(18.dp))
-            }
-
-
-            //DogProduct
             item {
                 Text(
-                    text = "Product For Dog",
-                    fontSize = 30.sp,
-                    color = Color(0xFFCD8822),
+                    text = "Products for Dog",
+                    fontSize = 18.sp,
+                    color = Color(0xFF2E1F09),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -290,8 +281,8 @@ fun UiHomePage(
             item {
                 LazyRow(
                     modifier = Modifier
-                        .padding(vertical = 8.dp)
                         .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 ) {
                     items(products) { product ->
                         ProductItem(
@@ -299,122 +290,103 @@ fun UiHomePage(
                             description = product.description,
                             price = product.price,
                             image = product.image,
-                            addToCart = { /*TODO*/ }) {
-
-                        }
+                            addToCart = { cartViewModel.addToCart(product) },
+                            onClick = {
+                                navController.navigate("singleProduct")
+                            }
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ImageSlider(images: List<Int>) {
+    val pagerState = rememberPagerState()
+
+    Column {
+        HorizontalPager(
+            count = images.size,
+            state = pagerState,
+            modifier = Modifier.height(200.dp)
+        ) { page ->
+            Image(
+                painter = painterResource(id = images[page]),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(16f / 9f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Pager Indicator
+        PagerIndicator(
+            pagerState = pagerState,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(8.dp)
+        )
     }
 }
 
 
 @Composable
-fun ImageSlider(images: List<Int>) {
-    LazyRow(
-        modifier = Modifier
-            .padding(vertical = 8.dp)
-            .height(200.dp) // ارتفاع مستطیل‌ها
+fun PagerIndicator(
+    pagerState: PagerState,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center
     ) {
-        items(images) { imageRes ->
+        repeat(pagerState.pageCount) { index ->
+            val color = if (pagerState.currentPage == index) Color.Black else Color.Gray
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxHeight() // به جای fillMaxSize از fillMaxHeight استفاده کنید
-            ) {
-                Image(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxHeight() // به جای fillMaxSize از fillMaxHeight استفاده کنید
-                        .aspectRatio(16f / 9f) // حفظ نسبت تصویر
-                        .padding(horizontal = 8.dp)
-                )
-            }
+                    .size(8.dp)
+                    .background(color, shape = RoundedCornerShape(50))
+                    .padding(2.dp)
+            )
         }
     }
 }
-
-
-//
-//
-//            item {
-//                LazyRow(
-//                    modifier = Modifier.padding(vertical = 8.dp)
-//                ) {
-//                    items(products) { product ->
-//                        ProductItem(
-//                            name = product.name,
-//                            description = product.description,
-//                            price = product.price,
-//                            image = product.image,
-//                            addToCart = {
-////                                cartViewModel.addToCart(product)
-//                            },
-//                            onClick = {
-//                                val productJson = gson.toJson(product)
-//                                navController.navigate("single_product?product=$productJson")
-//                            }
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
 
 
 @Composable
 fun CategoryItem(imageRes: Int, name: String) {
-    val isPressed = remember { mutableStateOf(false) }
-    val backgroundColor =
-        if (isPressed.value) Color.Green else Color(0xFFA5D6A7)
-
-    Box(
+    Column(
         modifier = Modifier
             .padding(8.dp)
-            .width(150.dp)
-            .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
-            .height(100.dp)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = {
-                        isPressed.value = true
-                    },
-                    onPress = {
-                        tryAwaitRelease()
-                        isPressed.value = false
-                    }
-                )
-            }
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White)
+            .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+            .clickable { /* Handle click event */ }
+            .padding(16.dp)
+            .width(120.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        Image(
+            painter = painterResource(id = imageRes),
+            contentDescription = null,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = name,
-                fontSize = 16.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+                .size(80.dp)
+                .clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = name,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -423,62 +395,90 @@ fun ProductItem(
     name: String,
     description: String,
     price: Int,
-    image: Int, // استفاده از Int برای منابع محلی
+    image: Int,
     addToCart: () -> Unit,
     onClick: () -> Unit,
 ) {
-    Column(
+    var isSelected by remember { mutableStateOf(false) }
+
+    Box(
         modifier = Modifier
-            .width(180.dp)
+            .width(260.dp)
+            .height(280.dp)
             .padding(8.dp)
             .background(Color.White, RoundedCornerShape(8.dp))
-            .padding(8.dp)
-            .clickable(onClick = onClick),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .border(
+                width = 2.dp, // ضخامت بردر
+                color = Color(0xFFFFA500), // رنگ نارنجی برای بردر
+                shape = RoundedCornerShape(8.dp) // شکل گوشه‌های بردر
+            )
+            .clickable(onClick = onClick)
     ) {
+
         Image(
             painter = painterResource(id = image),
             contentDescription = null,
             modifier = Modifier
-                .height(200.dp)
                 .fillMaxWidth()
+                .height(160.dp)
                 .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = name,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        Text(
-            text = description,
-            fontSize = 12.sp,
-            color = Color.Black,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Text(
-            text = "$$price",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF388E3C)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        IconButton(
-            onClick = addToCart,
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(8.dp)
+                .fillMaxWidth()
         ) {
-            Icon(
-                imageVector = Icons.Default.ShoppingCart,
-                contentDescription = "",
-                tint = Color.Black
+
+            Text(
+                text = name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFCC9C99) // رنگ صورتی برای متن
             )
+
+            Text(
+                text = description,
+                fontSize = 12.sp,
+                color = Color(0xFFCC9C99), // رنگ صورتی برای متن
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = "$$price",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF388E3C),
+                )
+
+                IconButton(
+                    onClick = addToCart,
+                    enabled = !isSelected,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = "Add to cart",
+                        tint = if (isSelected) Color(0xFF388E3C) else Color(0xFFFEA500)
+                    )
+                }
+            }
         }
     }
 }
 
-//AnimalsBox
+
 @Composable
 fun AnimalBox(imageRes: Int, backgroundColor: Color, text: String) {
     Box(
@@ -534,7 +534,7 @@ fun AnimalBoxes() {
             AnimalBox(
                 imageRes = R.drawable.parrot,
                 backgroundColor = Color(0xFFFFF3E0),
-                text = "parrot"
+                text = "Parrot"
             )
         }
         item {
@@ -547,9 +547,15 @@ fun AnimalBoxes() {
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-private fun Animals() {
-    AnimalBoxes()
+private fun PreviewUiHomePage() {
+    Shop_App_projectTheme {
+        UiHomePage(
+            userViewModel = viewModel(),
+            cartViewModel = viewModel(),
+            navController = rememberNavController()
+        )
+    }
 }
-

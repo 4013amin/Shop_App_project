@@ -7,10 +7,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
@@ -29,11 +34,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,6 +57,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.airbnb.lottie.compose.*
 import com.example.shop_app_project.R
+import kotlinx.coroutines.NonDisposableHandle.parent
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -153,7 +163,7 @@ fun RegisterScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
                     modifier = Modifier.padding(10.dp)
                 ) {
                     OutlinedTextField(
@@ -187,11 +197,13 @@ fun RegisterScreen(
                             password = it
                             userViewModel.saveCredentials(username, password, phone, location)
                         },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
                         label = { Text(text = "Password", color = Color.Black) },
                         modifier = Modifier.padding(10.dp),
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Person,
+                                imageVector = Icons.Default.Lock,
                                 contentDescription = "Password Icon",
                                 tint = Color.Black
                             )
@@ -221,40 +233,40 @@ fun RegisterScreen(
                                 tint = Color.Black
                             )
                         },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = Color.Black,
                             cursorColor = MaterialTheme.colorScheme.primary,
                             focusedLabelColor = MaterialTheme.colorScheme.primary,
                         ),
-                        textStyle = TextStyle(textColor)
-
+                        textStyle = LocalTextStyle.current.copy(color = Color.Black)
                     )
 
-                    OutlinedTextField(
-                        value = location,
-                        onValueChange = {
-                            location = it
-                            userViewModel.saveCredentials(username, password, phone, location)
-                        },
-                        label = { Text(text = "Location", color = Color.Black) },
-                        modifier = Modifier.padding(10.dp),
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = "Location Icon",
-                                tint = Color.Black
-                            )
-                        },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = Color.Black,
-                            cursorColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                        ),
-                        textStyle = TextStyle(textColor)
-
-                    )
+//                    OutlinedTextField(
+//                        value = location,
+//                        onValueChange = {
+//                            location = it
+//                            userViewModel.saveCredentials(username, password, phone, location)
+//                        },
+//                        label = { Text(text = "Location", color = Color.Black) },
+//                        modifier = Modifier.padding(10.dp),
+//                        leadingIcon = {
+//                            Icon(
+//                                imageVector = Icons.Default.LocationOn,
+//                                contentDescription = "Location Icon",
+//                                tint = Color.Black
+//                            )
+//                        },
+//                        colors = TextFieldDefaults.outlinedTextFieldColors(
+//                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+//                            unfocusedBorderColor = Color.Black,
+//                            cursorColor = MaterialTheme.colorScheme.primary,
+//                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+//                        ),
+//                        textStyle = TextStyle(textColor)
+//
+//                    )
 
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -287,6 +299,7 @@ fun RegisterScreen(
                                 .fillMaxWidth()
                                 .background(color = Color(0xFFFFB004)),
                             colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = Color(0xFFFFB004),
                                 contentColor = Color.Black
                             )
                         ) {
@@ -300,6 +313,7 @@ fun RegisterScreen(
                                 Text("Login", color = Color.Black)
                             }
                         }
+
                     }
                 }
             }
@@ -326,20 +340,46 @@ fun getLastLocation(
             val loc = "Lat: ${it.latitude}, Lon: ${it.longitude}"
             onLocationReceived(loc)
         } ?: run {
-            onLocationReceived("Location not available")
+            onLocationReceived("Turn on your locatio")
         }
     }.addOnFailureListener {
-        onLocationReceived("Failed to get location")
+        onLocationReceived("Turn on your location")
     }
 }
 
 
-@Preview(showBackground = true)
+
+
 @Composable
-private fun showRegisterScreen() {
+fun NameProfile(name: String, text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp)
+            .background(color = Color.White)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.user_1),
+            contentDescription = null,
+            modifier = Modifier
+                .width(55.dp)
+                .height(55.dp)
+                .clickable { }
+        )
 
-    val navController = rememberNavController()
-    val userViewModel: UserViewModel = viewModel()
-
-    RegisterScreen(navController = navController, userViewModel)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp)
+                .height(40.dp)
+                .align(alignment = Alignment.CenterVertically)
+        ) {
+            Text(
+                text = "Hi , Amin ",
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
 }

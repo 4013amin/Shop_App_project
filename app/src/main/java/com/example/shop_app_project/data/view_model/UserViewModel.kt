@@ -8,6 +8,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.shop_app_project.data.models.product.Category
 import com.example.shop_app_project.data.models.product.PorductModel
@@ -77,7 +79,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             val response = try {
                 val user = login_model(
                     username = username,
-                    address = address,
+                    address = address, "", "", "", "",
                 )
                 Utils_ret.api.loginUser(user)
             } catch (e: IOException) {

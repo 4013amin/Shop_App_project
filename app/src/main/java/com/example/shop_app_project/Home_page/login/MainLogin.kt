@@ -120,15 +120,15 @@ fun bottomnavigations(
         }
         composable("search") {
             SearchPage(
-                navController = navController
+                navController = navController, shoppingCartViewModel
             )
         }
         composable("profile") { ProfilePage() }
         composable("singlePage") {
-            ProductDetailsPage(navController)
+            ProductDetailsPage(navController , shoppingCartViewModel)
         }
         composable("cart") {
-            CartPage(shoppingCartViewModel)
+            CartPage(shoppingCartViewModel, navController)
         }
 
     }
